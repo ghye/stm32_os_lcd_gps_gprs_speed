@@ -15,6 +15,7 @@
 #include "board_init.h"
 #include "driv_systick.h"
 #include "app_rfid.h"
+#include "app_hmc5883l_bmp085.h"
 
 void NVIC_Config(void)
 {
@@ -72,6 +73,7 @@ void board_init(void)
 
 	app_voice_init();
 
-	app_rfid_init();
+	//app_rfid_init();
+	app_hmc5883l_bmp085_init();
 }
 

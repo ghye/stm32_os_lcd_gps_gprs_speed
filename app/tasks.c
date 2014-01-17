@@ -13,6 +13,7 @@
 #include "app_speed.h"
 #include "app_voice.h"
 #include "app_rfid.h"
+#include "app_hmc5883l_bmp085.h"
 
 void task_gprs(void *arg)
 {
@@ -58,7 +59,8 @@ void task3(void *arg)
 {
 	while (1) {
 		app_voice_play();
-		app_rfid_proc();
+		//app_rfid_proc();
+		app_hmc5883l_bmp085();
 		os_task_delayms(/*5000*/20);
 	}
 }

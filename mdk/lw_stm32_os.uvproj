@@ -465,6 +465,11 @@
               <FileType>1</FileType>
               <FilePath>..\app\app_rfid.c</FilePath>
             </File>
+            <File>
+              <FileName>app_hmc5883l_bmp085.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\app_hmc5883l_bmp085.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -564,6 +569,11 @@
               <FileName>driv_mfrc522.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\driver\driv_mfrc522.c</FilePath>
+            </File>
+            <File>
+              <FileName>driv_hmc5883l_bmp085.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\driver\driv_hmc5883l_bmp085.c</FilePath>
             </File>
           </Files>
         </Group>
