@@ -15,6 +15,7 @@
 #define ADDR_HMC5883L	0x3C
 #define ADDR_BMP085	0xEE
 #define ADDR_ADXL345	0xA6
+#define ADDR_L3G4200	0xD2
 
 #define TIMEOUT	0x20
 
@@ -287,6 +288,34 @@ void driv_hmc5883l_bmp085_init(void)
 	//driv_hmc5883l_bmp085_accelerometer_init();
 }
 
+/*初始化L3G4200D*/
+bool driv_hmc5883l_bmp085_angular_init(void)
+{
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x20, 0x0f) == false) {
+		com_send_message(USART_GPS_NUM, "L3G4200D init err1");
+		return false;
+	}
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x21, 0x00) == false) {
+		com_send_message(USART_GPS_NUM, "L3G4200D init err2");
+		return false;
+	}
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x22, 0x08) == false) {
+		com_send_message(USART_GPS_NUM, "L3G4200D init err3");
+		return false;
+	}
+	//if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x23, 0x30) == false) {	//+-2000dps
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x23, 0x00) == false) {	//+-250dps
+		com_send_message(USART_GPS_NUM, "L3G4200D init err4");
+		return false;
+	}
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_L3G4200, 0x24, 0x00) == false) {
+		com_send_message(USART_GPS_NUM, "L3G4200D init err5");
+		return false;
+	}
+
+	return true;
+}
+
 /*读罗盘*/
 bool driv_hmc5883l_bmp085_read_compass(uint8_t *buf)
 {
@@ -329,6 +358,38 @@ bool driv_hmc5883l_bmp085_read_accelerometer(uint8_t *buf)
 	if (driv_hmc5883l_bmp085_read_byte(ADDR_ADXL345, 0x32, buf, 6) == false) {
 		com_send_message(USART_GPS_NUM, "ADXL345 read err");
 		return false;
+	}
+	#endif
+
+	return true;
+}
+
+/*读陀螺仪角度*/
+bool driv_hmc5883l_bmp085_read_angular(uint8_t *buf)
+{
+	static bool f = false;
+	int i;
+
+	if (!f) {
+		driv_hmc5883l_bmp085_angular_init();
+		f = true;
+		os_task_delayms(10);
+	}
+
+	#if 1
+	/*ADDR_L3G4200要求读写多个数字时, MSB必须是1, 所以与0x80*/
+	if (driv_hmc5883l_bmp085_read_byte(ADDR_L3G4200, 0x28 | 0x80, buf, 6) == false) {
+		com_send_message(USART_GPS_NUM, "ADDR_L3G4200 read err");
+		return false;
+	}
+	#else
+	i = 0;
+	while (i++ < 6) {
+		if (driv_hmc5883l_bmp085_read_byte(ADDR_L3G4200, 0x28 + i, buf + i, 1) == false) {
+			com_send_message(USART_GPS_NUM, "ADDR_L3G4200 read err");
+			return false;
+		}
+		os_task_delayms(1);
 	}
 	#endif
 
