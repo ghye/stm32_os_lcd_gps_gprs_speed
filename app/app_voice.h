@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 void app_voice_data_insert(uint8_t *buf, uint16_t len);
 int32_t app_voice_data_read(void);

@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "public.h"
 #include "driv_lcd.h"
 #include "app_rtc.h"
 #include "app_lcd_memu.h"
 #include "app_network_data.h"
 #include "app_rfid.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
 
 uint8_t logo_gps[32] = {
 	0x00, 0x00, 0x70, 0x08, 0x54, 0x14, 0x7A, 0x22, 0x11, 0x44, 0x20, 0x88, 0x10, 0x50, 0x08, 0x20, 
@@ -264,3 +266,5 @@ void app_lcd_menu_l1_yn_question(void)
 	
 	driv_lcd_tx_reload_dma();
 }
+
+#endif

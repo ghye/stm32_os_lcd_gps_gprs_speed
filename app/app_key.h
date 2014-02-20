@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "public.h"
 #include "driv_key.h"
 
 struct app_key {

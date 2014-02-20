@@ -3,6 +3,8 @@
 
 #include "driv_beep.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define DRIV_BEEP_PORT	GPIOB
 #define DRIV_BEEP_PIN	GPIO_Pin_0
 
@@ -27,3 +29,5 @@ void driv_beep_close(void)
 {
 	GPIO_ResetBits(DRIV_BEEP_PORT, DRIV_BEEP_PIN);
 }
+
+#endif

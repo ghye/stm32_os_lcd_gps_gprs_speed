@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 typedef struct{
 	uint8_t port;		/*1->uart1*/

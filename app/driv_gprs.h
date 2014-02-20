@@ -1,6 +1,8 @@
 #ifndef __DRIV_GPRS_H__
 #define __DRIV_GPRS_H__
 
+#include "public.h"
+
 void driv_gprs_rx_it_disable(void);
 void driv_gprs_rx_it_enable(void);
 void driv_gprs_send_msg(void *msg, uint32_t len);

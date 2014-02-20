@@ -1,6 +1,8 @@
 #ifndef __DRIV_SYSTICK_H__
 #define __DRIV_SYSTICK_H__
 
+#include "public.h"
+
 #define TICK_MS	1	/*1ms*/
 #define HZ 		(1000/TICK_MS)
 

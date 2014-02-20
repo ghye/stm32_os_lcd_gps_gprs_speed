@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 enum e_otp_voice_pluses {
 	E_OVP_EMPTY	=	1,

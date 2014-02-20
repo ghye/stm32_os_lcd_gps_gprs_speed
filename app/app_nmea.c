@@ -3,6 +3,9 @@
 
 #include "proto.h"
 #include "app_gps.h"
+#include "app_nmea.h"
+
+#if ((defined (CAR_DB44_V1_0_20130315_)) || defined (DouLunJi_CAR_GBC_V1_2_130511_))
 
 struct gps_device_t session;
 
@@ -40,3 +43,4 @@ int32_t app_nmea_parse(void *pgps)
 	return flag;
 }
 
+#endif

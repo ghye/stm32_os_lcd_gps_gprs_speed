@@ -18,9 +18,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
 #include "app_gprs.h"
 #include "driv_key.h"
 #include "driv_mfrc522.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -149,7 +151,9 @@ void SysTick_Handler(void)
 	os_task_wakeup();
 	ticks++;
 
+	#if defined (CAR_DB44_V1_0_20130315_)
 	driv_key_tick_process();
+	#endif
 	
 	/*#include "stm32f10x_gpio.h"
 	
@@ -427,6 +431,7 @@ void CAN_SCE_IRQHandler(void)
 *******************************************************************************/
 void EXTI9_5_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
 	#include "app_key.h"
 
 	enum key_name key;
@@ -466,6 +471,7 @@ void EXTI9_5_IRQHandler(void)
 	}
 
 	driv_key_process(key);
+	#endif
 }
 
 /*******************************************************************************
@@ -513,11 +519,13 @@ void TIM1_TRG_COM_IRQHandler(void)
 volatile unsigned char voice_update_cnt;
 void TIM1_CC_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
 	if (TIM_GetITStatus(TIM1, TIM_IT_CC2) != RESET){
 		TIM_ClearITPendingBit(TIM1, TIM_IT_CC2);
 		if((!voice_update_cnt) || (!--voice_update_cnt))
 			TIM_Cmd(TIM1, DISABLE);
 	}
+	#endif
 }
 
 /*******************************************************************************
@@ -573,7 +581,9 @@ void I2C1_EV_IRQHandler(void)
 *******************************************************************************/
 void I2C1_ER_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
 	mfrc522_err_it();
+	#endif
 }
 
 /*******************************************************************************
@@ -596,6 +606,9 @@ void I2C2_EV_IRQHandler(void)
 *******************************************************************************/
 void I2C2_ER_IRQHandler(void)
 {
+	#if defined(DouLunJi_CAR_GBC_V1_2_130511_)
+	I2C_err_it();
+	#endif
 }
 
 /*******************************************************************************
@@ -629,6 +642,8 @@ void SPI2_IRQHandler(void)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
+	
 	#include "app_gprs.h"
 	#include "app_speed.h"
 	
@@ -639,6 +654,15 @@ void USART1_IRQHandler(void)
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
 		app_speed_read_raw(USART_ReceiveData(USART1));
 	}
+
+	#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		app_gprs_process_gprs_rbuf(USART_ReceiveData(USART1));
+	}
+	
+	#endif
 }
 
 /*******************************************************************************
@@ -650,10 +674,23 @@ void USART1_IRQHandler(void)
 *******************************************************************************/
 void USART2_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
+	
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		app_gprs_process_gprs_rbuf(USART_ReceiveData(USART2));
 	}
+
+	#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+
+	#include "app_gps.h"
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		app_gps_rbuf_hander(USART_ReceiveData(USART2)); 
+	}
+	
+	#endif
 }
 
 /*******************************************************************************
@@ -821,12 +858,14 @@ void UART4_IRQHandler(void)
 *******************************************************************************/
 void UART5_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
 	#include "app_gps.h"
 	if(USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
 	{
 		/* Read one byte from the receive data register */
 		app_gps_rbuf_hander(USART_ReceiveData(UART5)); 
 	}
+	#endif
 }
 
 /*******************************************************************************
@@ -871,12 +910,14 @@ void DMA2_Channel1_IRQHandler(void)
 *******************************************************************************/
 void DMA2_Channel2_IRQHandler(void)
 {
+	#if defined (CAR_DB44_V1_0_20130315_)
 	#include "driv_lcd.h"
 	
 	if(DMA_GetITStatus(DMA2_IT_TC2)) {
 		driv_lcd_tx_dma_disable();
 		DMA_ClearITPendingBit(DMA2_IT_GL2 | DMA2_IT_GL2 | DMA2_IT_HT2 | DMA2_IT_TE2);
 	}
+	#endif
 }
 
 /*******************************************************************************

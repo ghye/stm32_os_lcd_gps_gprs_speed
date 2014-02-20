@@ -2,6 +2,7 @@
 #define __PROTO_H__
 
 #include <stdint.h>
+#include "public.h"
 //#include "nmea0813.h"
 #include "common.h"
 

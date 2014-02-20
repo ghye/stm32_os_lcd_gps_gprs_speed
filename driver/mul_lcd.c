@@ -1,4 +1,5 @@
 #include "stm32f10x_gpio.h"
+#include "mul_lcd.h"
 
 #define uint  unsigned int
 #define uchar unsigned char

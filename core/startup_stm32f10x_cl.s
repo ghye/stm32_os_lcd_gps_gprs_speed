@@ -30,6 +30,7 @@
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
+	IF :DEF:STM32F10X_CL
 Stack_Size      EQU     0x00000400
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
@@ -362,7 +363,7 @@ __user_initial_stackheap
                  ALIGN
 
                  ENDIF
-
+	ENDIF
                  END
 
 ;******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE*****

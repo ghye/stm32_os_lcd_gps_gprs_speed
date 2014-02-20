@@ -12,6 +12,14 @@
 #include "app_usart.h"
 #include "driv_hmc5883l_bmp085.h"
 
+#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+
+#if defined(CAR_DB44_V1_0_20130315_)
+#define I2CX	I2C1
+#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+#define I2CX	I2C2 
+#endif
+
 #define ADDR_HMC5883L	0x3C
 #define ADDR_BMP085	0xEE
 #define ADDR_ADXL345	0xA6
@@ -26,6 +34,8 @@ static void driv_hmc5883l_bmp085_i2c_init(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	I2C_InitTypeDef  I2C_InitStructure;
 
+	#if defined(CAR_DB44_V1_0_20130315_)
+	
 	//RCC_AHBPeriphClockCmd(RCC_AHBPeriph_FSMC, DISABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
 	
@@ -36,7 +46,7 @@ static void driv_hmc5883l_bmp085_i2c_init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	I2C_DeInit(I2C1);
+	I2C_DeInit(I2CX);
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
 	
@@ -46,12 +56,42 @@ static void driv_hmc5883l_bmp085_i2c_init(void)
 	I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
 	I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
 	I2C_InitStructure.I2C_ClockSpeed = ClockSpeed;
-	I2C_Init(I2C1, &I2C_InitStructure);
+	I2C_Init(I2CX, &I2C_InitStructure);
 
-	I2C_Cmd(I2C1, ENABLE);
+	I2C_Cmd(I2CX, ENABLE);
 
 	/* Enable I2C1 Error interrupt */
-	I2C_ITConfig(I2C1, I2C_IT_ERR, ENABLE);
+	I2C_ITConfig(I2CX, I2C_IT_ERR, ENABLE);
+
+	#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+	
+	
+	/* Configure I2C1 pins: SCL and SDA ----------------------------------------*/
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_10 | GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	I2C_DeInit(I2CX);
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+	
+	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+	I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+	I2C_InitStructure.I2C_OwnAddress1 = 0x00;//I2C1_SLAVE_ADDRESS7 << 1;
+	I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+	I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+	I2C_InitStructure.I2C_ClockSpeed = ClockSpeed;
+	I2C_Init(I2CX, &I2C_InitStructure);
+
+	I2C_Cmd(I2CX, ENABLE);
+
+	/* Enable I2C1 Error interrupt */
+	I2C_ITConfig(I2CX, I2C_IT_ERR, ENABLE);
+	
+	#endif
 }
 
 static void driv_hmc5883l_bmp085_gpio_init(void)
@@ -64,27 +104,27 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 	uint32_t I2C_TimeOut = TIMEOUT;
 	uint64_t i;
 
-	I2C_AcknowledgeConfig(I2C1, ENABLE);
+	I2C_AcknowledgeConfig(I2CX, ENABLE);
 	
 	I2C_TimeOut = TIMEOUT;
-	while ((I2C_GetFlagStatus(I2C1,I2C_FLAG_BUSY)) && I2C_TimeOut)  /*!< EV5 */
+	while ((I2C_GetFlagStatus(I2CX,I2C_FLAG_BUSY)) && I2C_TimeOut)  /*!< EV5 */
 	{ 
 		os_task_delayms(1);
 		I2C_TimeOut--;
 	}
 	if (I2C_TimeOut == 0)
 	{ 
-		I2C_SoftwareResetCmd(I2C1, ENABLE);
-		I2C_SoftwareResetCmd(I2C1, DISABLE);
+		I2C_SoftwareResetCmd(I2CX, ENABLE);
+		I2C_SoftwareResetCmd(I2CX, DISABLE);
 		driv_hmc5883l_bmp085_i2c_init();
 	}
 	
 	/*!< Send LM75_I2C START condition */
-	I2C_GenerateSTART(I2C1, ENABLE);
+	I2C_GenerateSTART(I2CX, ENABLE);
 
 	/*!< Test on LM75_I2C EV5 and clear it */
 	I2C_TimeOut = TIMEOUT;
-	while ((!I2C_GetFlagStatus(I2C1,I2C_FLAG_SB)) && I2C_TimeOut)  /*!< EV5 */
+	while ((!I2C_GetFlagStatus(I2CX,I2C_FLAG_SB)) && I2C_TimeOut)  /*!< EV5 */
 	{ 
 		os_task_delayms(1);	
 		I2C_TimeOut--;
@@ -96,26 +136,26 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 	}
 
 	/*!< Send STLM75 slave address for write */
-	I2C_Send7bitAddress(I2C1, i2c_addr, I2C_Direction_Transmitter);
+	I2C_Send7bitAddress(I2CX, i2c_addr, I2C_Direction_Transmitter);
 	I2C_TimeOut = TIMEOUT;
-	while ((!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)) && I2C_TimeOut)/* EV6 */
+	while ((!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)) && I2C_TimeOut)/* EV6 */
 	{
 		os_task_delayms(1);	
 		I2C_TimeOut--;
 	}
 
-	if ((I2C_GetFlagStatus(I2C1, I2C_FLAG_AF) != 0x00) || (I2C_TimeOut == 0))
+	if ((I2C_GetFlagStatus(I2CX, I2C_FLAG_AF) != 0x00) || (I2C_TimeOut == 0))
 	{
 		com_send_message(USART_GPS_NUM, "r s2");
 		return false;
 	}
 
 	/* Send the device's internal address to write to */
-	I2C_SendData(I2C1, reg_addr);
+	I2C_SendData(I2CX, reg_addr);
 
 	/* Test on TXE FLag (data sent) */
 	I2C_TimeOut = TIMEOUT;
-	while ((!I2C_GetFlagStatus(I2C1, I2C_FLAG_TXE)) && (!I2C_GetFlagStatus(I2C1, I2C_FLAG_BTF)))
+	while ((!I2C_GetFlagStatus(I2CX, I2C_FLAG_TXE)) && (!I2C_GetFlagStatus(I2CX, I2C_FLAG_BTF)))
 	{
 		os_task_delayms(1);
 		if((I2C_TimeOut--) == 0) {
@@ -126,11 +166,11 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 
 
 	/* Send START condition a second time */
-	I2C_GenerateSTART(I2C1, ENABLE);
+	I2C_GenerateSTART(I2CX, ENABLE);
 
 	/* Test on SB Flag */
 	I2C_TimeOut = TIMEOUT;
-	while (!I2C_GetFlagStatus(I2C1,I2C_FLAG_SB))
+	while (!I2C_GetFlagStatus(I2CX,I2C_FLAG_SB))
 	{
 		os_task_delayms(1);	
 		if((I2C_TimeOut--) == 0) {
@@ -140,11 +180,11 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 	}
 
 	/* Send LM75 address for read */
-	I2C_Send7bitAddress(I2C1, i2c_addr, I2C_Direction_Receiver);
+	I2C_Send7bitAddress(I2CX, i2c_addr, I2C_Direction_Receiver);
 
 	/* Test on ADDR Flag */
 	I2C_TimeOut = TIMEOUT;
-	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
 	{
 		os_task_delayms(1);		
 		if((I2C_TimeOut--) == 0) {
@@ -155,12 +195,12 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 
 	while (len) {
 		if (len == 1) {
-			I2C_AcknowledgeConfig(I2C1, DISABLE);
-			I2C_GenerateSTOP(I2C1, ENABLE);
+			I2C_AcknowledgeConfig(I2CX, DISABLE);
+			I2C_GenerateSTOP(I2CX, ENABLE);
 		}
 
 		I2C_TimeOut = TIMEOUT;
-		while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
+		while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_BYTE_RECEIVED))
 		{
 			os_task_delayms(1);	
 			if((I2C_TimeOut--) == 0) {
@@ -169,7 +209,7 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 			}
 		}
 
-		*buf = I2C_ReceiveData(I2C1);
+		*buf = I2C_ReceiveData(I2CX);
 
 		buf++;
 		len--;
@@ -178,7 +218,7 @@ static bool driv_hmc5883l_bmp085_read_byte(uint8_t i2c_addr, uint8_t reg_addr, u
 	//os_task_delayms(1);
 	
 	/* Send STOP Condition */
-	//I2C_GenerateSTOP(I2C1, ENABLE);
+	//I2C_GenerateSTOP(I2CX, ENABLE);
 
 	return true;
 }
@@ -188,27 +228,27 @@ static bool driv_hmc5883l_bmp085_write_byte(uint8_t i2c_addr, uint8_t reg_addr, 
 	uint32_t I2C_TimeOut = TIMEOUT;
 	uint64_t i;
 
-	I2C_AcknowledgeConfig(I2C1, ENABLE);
+	I2C_AcknowledgeConfig(I2CX, ENABLE);
 	
 	I2C_TimeOut = TIMEOUT;
-	while ((I2C_GetFlagStatus(I2C1,I2C_FLAG_BUSY)) && I2C_TimeOut)  /*!< EV5 */
+	while ((I2C_GetFlagStatus(I2CX,I2C_FLAG_BUSY)) && I2C_TimeOut)  /*!< EV5 */
 	{ 
 		os_task_delayms(1);
 		I2C_TimeOut--;
 	}
 	if (I2C_TimeOut == 0)
 	{ 
-		I2C_SoftwareResetCmd(I2C1, ENABLE);
-		I2C_SoftwareResetCmd(I2C1, DISABLE);
+		I2C_SoftwareResetCmd(I2CX, ENABLE);
+		I2C_SoftwareResetCmd(I2CX, DISABLE);
 		driv_hmc5883l_bmp085_i2c_init();
 	}
 	
 	/*!< Send LM75_I2C START condition */
-	I2C_GenerateSTART(I2C1, ENABLE);
+	I2C_GenerateSTART(I2CX, ENABLE);
 
 	/*!< Test on LM75_I2C EV5 and clear it */
 	I2C_TimeOut = TIMEOUT;
-	while ((!I2C_GetFlagStatus(I2C1,I2C_FLAG_SB)) && I2C_TimeOut)  /*!< EV5 */
+	while ((!I2C_GetFlagStatus(I2CX,I2C_FLAG_SB)) && I2C_TimeOut)  /*!< EV5 */
 	{ 
 		os_task_delayms(1);
 		I2C_TimeOut--;
@@ -220,39 +260,39 @@ static bool driv_hmc5883l_bmp085_write_byte(uint8_t i2c_addr, uint8_t reg_addr, 
 	}
 
 	/*!< Send STLM75 slave address for write */
-	I2C_Send7bitAddress(I2C1, i2c_addr, I2C_Direction_Transmitter);
+	I2C_Send7bitAddress(I2CX, i2c_addr, I2C_Direction_Transmitter);
 
 	I2C_TimeOut = TIMEOUT;
-	while ((!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)) && I2C_TimeOut)/* EV6 */
+	while ((!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)) && I2C_TimeOut)/* EV6 */
 	{
 		os_task_delayms(1);
 		I2C_TimeOut--;
 	}
 
-	if ((I2C_GetFlagStatus(I2C1, I2C_FLAG_AF) != 0x00) || (I2C_TimeOut == 0))
+	if ((I2C_GetFlagStatus(I2CX, I2C_FLAG_AF) != 0x00) || (I2C_TimeOut == 0))
 	{
 		//com_send_message(USART_GPS_NUM, "w s2");
 		return false;
 	}
 	
-	I2C_SendData(I2C1, reg_addr);
+	I2C_SendData(I2CX, reg_addr);
 	I2C_TimeOut = TIMEOUT;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED) && I2C_TimeOut)
+	while(!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_BYTE_TRANSMITTED) && I2C_TimeOut)
 	{
 		os_task_delayms(1);
 		I2C_TimeOut--;
 	}
 
-	I2C_SendData(I2C1, value);
+	I2C_SendData(I2CX, value);
 	I2C_TimeOut = TIMEOUT;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED) && I2C_TimeOut)
+	while(!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_BYTE_TRANSMITTED) && I2C_TimeOut)
 	{
 		os_task_delayms(1);
 		I2C_TimeOut--;
 	}
 
 	/* Send STOP Condition */
-	I2C_GenerateSTOP(I2C1, ENABLE);
+	I2C_GenerateSTOP(I2CX, ENABLE);
 
 	return true;
 }
@@ -396,3 +436,47 @@ bool driv_hmc5883l_bmp085_read_angular(uint8_t *buf)
 	return true;
 }
 
+#if defined(DouLunJi_CAR_GBC_V1_2_130511_)
+/*IT ERR interrupt process*/
+void I2C_err_it(void)
+{
+	ITStatus s;
+	
+	s = I2C_GetITStatus(I2CX, I2C_IT_SMBALERT);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_SMBALERT);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_TIMEOUT);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_TIMEOUT);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_PECERR);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_PECERR);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_OVR);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_OVR);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_AF);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_AF);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_ARLO);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_ARLO);
+	}
+
+	s = I2C_GetITStatus(I2CX, I2C_IT_BERR);
+	if (s) {
+		I2C_ClearITPendingBit(I2CX, I2C_IT_BERR);
+	}
+}
+#endif
+
+#endif

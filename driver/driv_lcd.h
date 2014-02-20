@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 void driv_lcd_init(void);
 void driv_lcd_clrram(void);

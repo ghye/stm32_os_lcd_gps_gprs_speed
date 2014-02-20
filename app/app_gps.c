@@ -50,7 +50,12 @@ static uint8_t gpsbuf[GPS_MAX_MSG_LEN];
 #define GPS_STATUS_TIMEOUT_S	40
 static uint64_t gps_err_recoder = 0;
 
+#if defined(CAR_DB44_V1_0_20130315_)
 static uint16_t GPS_INT_S = 2;//30;
+#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+static uint16_t GPS_INT_S = 30;
+#endif
+
 static uint64_t gps_next_ticks;
 
 static void app_gps_err_recoder_reset(void)

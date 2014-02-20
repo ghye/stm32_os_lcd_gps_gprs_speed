@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 struct app_network_yn_questions_		app_network_yn_questions;
 struct app_network_voices_ 			app_network_voices;
 struct app_network_text_notice_			app_network_text_notice;
@@ -149,3 +151,4 @@ void app_network_data_init(void)
 	app_network_data_proc((void *)buf);*/
 }
 
+#endif

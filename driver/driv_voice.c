@@ -6,6 +6,8 @@
 #include "core.h"
 #include "driv_systick.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define BUSY_PIN	GPIO_Pin_9
 #define DATA_PIN		GPIO_Pin_10
 #define REST_PIN		GPIO_Pin_11
@@ -137,3 +139,5 @@ void driv_voice_play(enum e_otp_voice_pluses w)
 		TIM_Cmd(TIM1, ENABLE);
 	} while(0);
 }
+
+#endif

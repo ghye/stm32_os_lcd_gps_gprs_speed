@@ -1,6 +1,7 @@
 #ifndef __APP_GPS_H__
 #define __APP_GPS_H__
 
+#include "public.h"
 #include "proto.h"
 
 struct gprmc_ *app_gps_gprmc_ft_read(void);

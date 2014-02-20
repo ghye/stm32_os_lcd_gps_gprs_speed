@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 #define START_YEAR	2010	//default 2010, Jan.1, 00:00:00
 #define SEC_IN_DAY	86400	// 1 day includes 86400 seconds

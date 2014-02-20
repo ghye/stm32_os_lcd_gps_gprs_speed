@@ -11,8 +11,10 @@ static void usart1_init(USART_InitTypeDef *USART_InitStructure)
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	USART_Cmd(USART1, DISABLE);
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
 	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 	// Configure USART Tx as alternate function push-pull
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -41,7 +43,7 @@ static void usart2_init(USART_InitTypeDef *USART_InitStructure)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
 
 	// Enable UART clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
@@ -73,7 +75,7 @@ static void usart3_init(USART_InitTypeDef *USART_InitStructure)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
 	
 	// Enable UART clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
@@ -108,7 +110,7 @@ void usart4_init(USART_InitTypeDef *USART_InitStructure)
 	// Enable UART clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
 
 	// Configure USART Tx as alternate function push-pull
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -139,7 +141,7 @@ void usart5_init(USART_InitTypeDef *USART_InitStructure)
 	// Enable UART clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
 
 	// Configure USART Tx as alternate function push-pull
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;

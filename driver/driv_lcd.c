@@ -5,6 +5,8 @@
 #include "core.h"
 #include "driv_lcd.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define LCD_LAMP_OFF()	GPIO_ResetBits(GPIOD, GPIO_Pin_14)
 #define LCD_LAMP_ON()	GPIO_SetBits(GPIOD, GPIO_Pin_14)
 #define LCD_RESET_ENABLE()	GPIO_ResetBits(GPIOD, GPIO_Pin_15)
@@ -480,3 +482,5 @@ void driv_lcd_disp_dots_dma(void *buf, uint8_t length, uint8_t width, uint8_t ro
 	}
 	driv_lcd_write_char_dma(COMMAND, 0x36);
 }
+
+#endif

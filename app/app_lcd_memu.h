@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 void app_lcd_menu_init(void);
 void app_lcd_menu_insert_yn_question(const char *p, uint16_t index);

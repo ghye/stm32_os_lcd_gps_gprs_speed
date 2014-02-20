@@ -3,6 +3,8 @@
 #include "driv_voice.h"
 #include "app_voice.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define APP_VOICE_LEN	128
 
 struct app_voice_data_ {
@@ -94,3 +96,5 @@ void app_voice_play(void)
 	
 	driv_voice_play(i);*/
 }
+
+#endif

@@ -8,6 +8,8 @@
 #include "driv_mfrc522.h"
 #include "driv_systick.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define DRIV_MFRC522_DATA_LEN		128
 
 #define I2C1_SLAVE_ADDRESS7	0x75
@@ -1185,3 +1187,4 @@ return;
 	I2C_GenerateSTOP(I2C1, ENABLE);
 }
 
+#endif

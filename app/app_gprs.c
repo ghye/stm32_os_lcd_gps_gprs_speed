@@ -10,6 +10,8 @@
 #include "driv_systick.h"
 #include "app_gps.h"
 #include "app_network_data.h"
+#include "app_hmc5883l_bmp085.h"
+#include "util.h"
 
 #define GPRS_MAX_MSG_LEN 512
 
@@ -98,8 +100,13 @@ struct srvs_ srvs;
 
 static int8_t g_IP_DNS[80];	/*服务器设置的命令*/
 
+#if defined (CAR_DB44_V1_0_20130315_)
 uint8_t g_rfid_send_gprs_msg[RFID_MSG_LEN];
+#endif
+
+#if defined (CAR_DB44_V1_0_20130315_)
 uint8_t g_key_send_gprs_msg[kEY_MSG_LEN];
+#endif
 	
 static void srvs_init(void)
 {
@@ -501,6 +508,36 @@ static void app_gprs_send_imei(void)
 	driv_gprs_send_msg((void *)buf, strlen((void *)buf));
 }
 
+static void app_gprs_make_gps_msg(char *buf, struct gprmc_ *prmc)
+{
+	char tbuf[16];
+	
+	sprintf((void *)buf, "%s", "s:");
+	sprintf((void *)tbuf, "%lf", prmc->lat);
+	delete_zero_datastr((void *)tbuf);
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, ",");
+	sprintf((void *)tbuf, "%lf", prmc->lon);
+	delete_zero_datastr((void *)tbuf);
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, ",");
+	sprintf((void *)tbuf, "%lf", prmc->speed);
+	delete_zero_datastr((void *)tbuf);
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, ",");
+	sprintf((void *)tbuf, "%lf", prmc->track);
+	delete_zero_datastr((void *)tbuf);
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, ",");
+	sprintf((void *)tbuf, "%d", (prmc->status==STATUS_FIX) ? 1:0);
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, ",");
+	memcpy((void *)tbuf, (void *)prmc->time.tm, 12);
+	tbuf[12] = '\0';
+	strcat((void *)buf, (void *)tbuf);
+	strcat((void *)buf, "#");
+}
+
 static void app_gprs_send_gps(void)
 {
 	#define s_cmd "s:%lf,%lf,%lf,%lf,%d,%s#"
@@ -514,6 +551,9 @@ static void app_gprs_send_gps(void)
 	while (cnt--) {
 		//prmc = app_gps_gprmc_ft_read();
 		prmc = app_gps_gprmc_lasted_read(&flag);
+
+		#if defined(CAR_DB44_V1_0_20130315_)
+		
 		if (NULL == prmc) {
 			if (flag == -2) {
 				app_gprs_send_imei();
@@ -521,14 +561,20 @@ static void app_gprs_send_gps(void)
 			return;
 		}
 
-		memcpy((void *)time, (void *)prmc->time.tm, 12);
-		time[12] = '\0';
+		#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
 
-		sprintf((void *)buf, s_cmd, prmc->lat, prmc->lon, prmc->speed, prmc->track, ((STATUS_FIX == prmc->status) ? 1:0), time);
+		if (NULL == prmc) {
+			return;
+		}
+		
+		#endif
+
+		app_gprs_make_gps_msg(buf, prmc);
 		driv_gprs_send_msg((void *)buf, strlen((void *)buf));
 	}
 }
 
+#if defined (CAR_DB44_V1_0_20130315_)
 static void app_gprs_send_rfid(void)
 {
 	uint32_t len;
@@ -539,7 +585,9 @@ static void app_gprs_send_rfid(void)
 		g_rfid_send_gprs_msg[0] = '\0';
 	}
 }
+#endif
 
+#if defined (CAR_DB44_V1_0_20130315_)
 static void app_gprs_send_key(void)
 {
 	uint32_t len;
@@ -550,6 +598,29 @@ static void app_gprs_send_key(void)
 		g_key_send_gprs_msg[0] = '\0';
 	}
 }
+#endif
+
+#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+
+static void app_gprs_send_three_dimensional(void)
+{
+	#define DIM_INT_S	5
+	
+	static uint32_t smy_ticks = 0;
+	char msg[128];
+	uint64_t lticks;
+
+	lticks = ticks;
+	if (lticks < smy_ticks + DIM_INT_S * HZ)
+		return;
+	smy_ticks = lticks;
+	strcpy(msg, "T:H:");
+	app_hmc5883l_bmp085_msg(msg + strlen(msg));
+	strcpy(msg + strlen(msg), "#");
+	driv_gprs_send_msg(msg, strlen(msg));
+}
+
+#endif
 
 static void app_gprs_send_tp_end(void) 
 {
@@ -629,6 +700,8 @@ static void app_gprs_network_data(void)
 	uint16_t val;
 	int32_t ret;
 	uint8_t buf[SEQED_MSGS_MAX_LEN];
+
+	#if defined (CAR_DB44_V1_0_20130315_)
 	
 	val = 0;
 	while (1) {
@@ -643,13 +716,21 @@ static void app_gprs_network_data(void)
 	app_network_data_proc((void *)buf);
 	strcpy((void *)buf, "T:C:00C4E3BAC3##");
 	app_network_data_proc((void *)buf);*/
+
+	#endif
 }
 
 void app_gprs_init(void)
 {
 	memset(g_IP_DNS, '\0', sizeof(g_IP_DNS));
+
+	#if defined (CAR_DB44_V1_0_20130315_)
 	g_rfid_send_gprs_msg[0] = '\0';
+	#endif
+
+	#if defined (CAR_DB44_V1_0_20130315_)
 	g_key_send_gprs_msg[0] = '\0';
+	#endif
 
 	srvs_init();
 	
@@ -732,8 +813,19 @@ int32_t app_gprs_socket(void)
 				//os_task_delayms(10000);
 			}
 			app_gprs_send_gps();
+
+			#if defined (CAR_DB44_V1_0_20130315_)
 			app_gprs_send_rfid();
+			#endif
+
+			#if defined (CAR_DB44_V1_0_20130315_)
 			app_gprs_send_key();
+			#endif
+
+			#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+			app_gprs_send_three_dimensional();
+			#endif
+			
 			app_gprs_status_recoder_reset();
 			break;
 		case GPRS_STATUS_SOCKET_TP_FINISH:

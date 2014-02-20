@@ -2,6 +2,8 @@
 #include "driv_mfrc522.h"
 #include "app_gprs.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 uint8_t default_key[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; 
 uint8_t g_mfrc522_buf[20];
 uint32_t g_rfid_serial_num = 0;
@@ -53,3 +55,4 @@ void app_rfid_proc(void)
 	*/
 }
 
+#endif

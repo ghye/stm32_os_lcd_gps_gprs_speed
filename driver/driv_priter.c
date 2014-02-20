@@ -1,3 +1,5 @@
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define CMD_INIT		"\x1B\x40"
 #define CAR_NO		"车牌号码：粤A26788\x0A"
 #define CAR_TYPE	"车牌分类：大型\x0A"
@@ -53,3 +55,5 @@ void driv_printer(void)
 	sprintf(data, "%s", TO_NAME);
 	fwrite(data, strlen(data), 1, portfp);
 }
+
+#endif

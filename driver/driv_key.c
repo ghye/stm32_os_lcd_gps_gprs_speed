@@ -9,6 +9,8 @@
 #include "app_beep.h"
 #include "driv_systick.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 struct dkey_st dkey[KEY_NUM];
 
 void driv_key_init(void)
@@ -253,3 +255,5 @@ void driv_key_tick_process(void)
 	if (E_KEY_NAME_ERROR != lkey)
 		key = lkey;
 }
+
+#endif

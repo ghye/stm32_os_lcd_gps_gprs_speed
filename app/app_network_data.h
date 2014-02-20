@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 #define YN_Q_LEN	64
 #define YN_Q_MAX	5

@@ -15,6 +15,8 @@
 #include "app_lcd_memu.h"
 #include "app_network_data.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 static uint8_t status_lcd = 0;
 static uint8_t cnt_lcd = 0;
 static uint8_t status_main = 0;
@@ -377,3 +379,4 @@ void app_lcd_disp(void)
 }
 #endif
 
+#endif

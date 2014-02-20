@@ -4,6 +4,8 @@
 #include "driv_key.h"
 #include "app_key.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define APP_KEY_NUM 8
 
 struct app_key_list {
@@ -105,3 +107,4 @@ uint8_t *app_key_process(void)
 	return keystr;
 }
 
+#endif

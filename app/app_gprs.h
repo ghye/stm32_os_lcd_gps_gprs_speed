@@ -2,6 +2,7 @@
 #define __APP_GPRS_H__
 
 #include <stdint.h>
+#include "public.h"
 
 #define RFID_MSG_LEN 128
 #define kEY_MSG_LEN 128

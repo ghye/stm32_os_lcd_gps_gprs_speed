@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 struct g_speed_info_ {
 	uint8_t speed_curr;

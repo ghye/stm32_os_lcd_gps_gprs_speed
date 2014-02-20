@@ -14,6 +14,7 @@
 #include "app_voice.h"
 #include "app_rfid.h"
 #include "app_hmc5883l_bmp085.h"
+#include "app_watchdog.h"
 
 void task_gprs(void *arg)
 {
@@ -21,6 +22,9 @@ void task_gprs(void *arg)
 		app_gprs_clean_seqed_msgs();
 		app_gprs_form_seqed_msgs();
 		app_gprs_socket();
+
+		app_wdg_update_task_tick(0);
+		app_wdg_keeplibe();
 		os_task_delayms(700);
 	}
 }
@@ -28,7 +32,11 @@ void task_gprs(void *arg)
 void task2(void *arg)
 {
 	while (1) {
-		app_lcd_disp();
+		#if defined (CAR_DB44_V1_0_20130315_)
+//		app_lcd_disp();
+		#endif
+
+		app_wdg_update_task_tick(1);
 		os_task_delayms(100);
 	}
 
@@ -58,9 +66,19 @@ void task2(void *arg)
 void task3(void *arg)
 {
 	while (1) {
+		#if defined (CAR_DB44_V1_0_20130315_)
 		app_voice_play();
+		#endif
+
+		#if defined (CAR_DB44_V1_0_20130315_)
 		//app_rfid_proc();
+		#endif
+
+		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
 		app_hmc5883l_bmp085();
+		#endif
+
+		app_wdg_update_task_tick(2);
 		os_task_delayms(/*5000*/20);
 	}
 }
@@ -69,9 +87,16 @@ void task4(void *arg)
 {
 	while (1) {
 		app_gps_parse();
+
+		#if defined (CAR_DB44_V1_0_20130315_)
 		app_speed_calc();
+		#endif
+		
 		app_rtc_process();
+
+		app_wdg_update_task_tick(3);
 		os_task_switch();
+		
 		//os_task_delayms(10);
 	}
 	

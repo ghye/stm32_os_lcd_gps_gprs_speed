@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "public.h"
 
 void driv_mfrc522_init(void);
 void driv_mfrc522_write(uint8_t *buf, uint32_t len);

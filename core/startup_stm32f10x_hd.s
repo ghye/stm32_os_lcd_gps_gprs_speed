@@ -32,6 +32,7 @@
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
+	IF :DEF:STM32F10X_HD
 ; Stack_Size      EQU     0x00000400
 Stack_Size      EQU     0x00000800
 
@@ -359,7 +360,7 @@ __user_initial_stackheap
                  ALIGN
 
                  ENDIF
-
+	ENDIF
                  END
 
 ;******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE*****

@@ -7,6 +7,8 @@
 #include "app_speed.h"
 #include "app_rtc.h"
 
+#if defined (CAR_DB44_V1_0_20130315_)
+
 #define SPEED_MAX	140
 #define VSC_DEF	66666
 
@@ -302,3 +304,5 @@ void app_speed_calc(void)
 	g_speed_info.total_km += g_speed_info.total_r/g_speed_info.VSC;
 	g_speed_info.total_r %= g_speed_info.VSC;
 }
+
+#endif
