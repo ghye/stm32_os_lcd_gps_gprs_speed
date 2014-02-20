@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+#include "util.h"
+
+#if 0
 uint16_t table_ccitt[256] = { /* CRC 字节余式表 */
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -49,4 +52,25 @@ uint16_t crc_cal_by_byte(uint8_t * ptr, uint32_t len)
 	}
 
 	return crc;
+}
+#endif
+
+/*清除十进制数字型字符串末尾的零，例如经纬度末尾的零*/
+void delete_zero_datastr(char *str)
+{
+	int l;
+
+	l = strlen(str);
+	
+	while (l--) {
+		if (str[l] == '0') {
+
+		} else if (str[l] >= '0' && str[l] <= '9') {
+			str[l + 1] = '\0';
+			return;
+		} else if (str[l] == '.') {
+			str[l + 2] = '\0';
+			return;
+		}
+	}
 }
