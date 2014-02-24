@@ -87,6 +87,8 @@ void app_hmc5883l_bmp085(void)
 	double ax, ay, az;
 
 #if 1
+	#if (COMPASS_MODEL == HMC5883L)
+	
 	if (driv_hmc5883l_bmp085_read_compass(buf)) {
 		log[0] = '\0';
 		x = (buf[0] << 8) | buf[1];
@@ -111,6 +113,14 @@ void app_hmc5883l_bmp085(void)
 			hmc588cl_compass.ax, hmc588cl_compass.ay, hmc588cl_compass.az);
 		com_send_message(USART_GPS_NUM, (void *)log);
 	}
+
+	#elif (COMPASS_MODEL == GY26)
+
+	if (driv_hmc5883l_bmp085_read_compass_gy26(buf)) {
+		hmc588cl_compass.ax = (buf[0] << 8) | buf[1];
+	}
+
+	#endif
 
 	os_task_delayms(1);
 #endif
@@ -165,7 +175,13 @@ void app_hmc5883l_bmp085(void)
 void app_hmc5883l_bmp085_msg(char *msg)
 {
 	msg[0] = '\0';
+
+	#if (COMPASS_MODEL == HMC5883L)
 	sprintf(msg + strlen(msg), "%d,%d,%d;",hmc588cl_compass.ax, hmc588cl_compass.ay, hmc588cl_compass.az);
+	#elif (COMPASS_MODEL == GY26)
+	sprintf(msg + strlen(msg), "%d;", hmc588cl_compass.ax);
+	#endif
+	
 	sprintf(msg + strlen(msg), "%d,%d,%d;",adxl345_acc.ax, adxl345_acc.ay, adxl345_acc.az);
 	sprintf(msg + strlen(msg), "%d,%d,%d",l3g4200d_ang.ax, l3g4200d_ang.ay, l3g4200d_ang.az);
 }

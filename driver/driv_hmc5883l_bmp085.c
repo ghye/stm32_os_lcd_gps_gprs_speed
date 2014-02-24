@@ -24,6 +24,7 @@
 #define ADDR_BMP085	0xEE
 #define ADDR_ADXL345	0xA6
 #define ADDR_L3G4200	0xD2
+#define ADDR_GY26		0xE0
 
 #define TIMEOUT	0x20
 
@@ -368,6 +369,23 @@ bool driv_hmc5883l_bmp085_read_compass(uint8_t *buf)
 
 	if (driv_hmc5883l_bmp085_read_byte(ADDR_HMC5883L, 0x03, buf, 6) == false) {
 		com_send_message(USART_GPS_NUM, "5883 read err");
+		return false;
+	}
+
+	return true;
+}
+
+bool driv_hmc5883l_bmp085_read_compass_gy26(uint8_t *buf)
+{
+	if (driv_hmc5883l_bmp085_write_byte(ADDR_GY26, 0x00, 0x31) == false) {
+		com_send_message(USART_GPS_NUM, "GY26 write err");
+		return false;
+	}
+
+	os_task_delayms(10);
+
+	if (driv_hmc5883l_bmp085_read_byte(ADDR_GY26, 0x01, buf, 2) == false) {
+		com_send_message(USART_GPS_NUM, "GY26 read err");
 		return false;
 	}
 

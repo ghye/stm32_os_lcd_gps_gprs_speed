@@ -5,6 +5,11 @@
 #include <stdbool.h>
 #include "public.h"
 
+#define HMC5883L	1
+#define GY26			2	/*模块:包含PIC单片机、HMC1022*/
+
+#define COMPASS_MODEL	GY26
+
 struct adxl345_acc_ {
 	float x;/*角度*/
 	float y;
