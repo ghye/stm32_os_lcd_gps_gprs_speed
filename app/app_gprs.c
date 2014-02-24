@@ -552,22 +552,9 @@ static void app_gprs_send_gps(void)
 		//prmc = app_gps_gprmc_ft_read();
 		prmc = app_gps_gprmc_lasted_read(&flag);
 
-		#if defined(CAR_DB44_V1_0_20130315_)
-		
-		if (NULL == prmc) {
-			if (flag == -2) {
-				app_gprs_send_imei();
-			}
-			return;
-		}
-
-		#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
-
 		if (NULL == prmc) {
 			return;
 		}
-		
-		#endif
 
 		app_gprs_make_gps_msg(buf, prmc);
 		driv_gprs_send_msg((void *)buf, strlen((void *)buf));

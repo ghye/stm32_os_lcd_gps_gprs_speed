@@ -75,8 +75,8 @@ void app_hmc5883l_bmp085_init(void)
 
 static void u16ToSigned(int *x)
 {
-	*x -= 0xffff;
-	*x--;
+	(*x) -= 0xffff;
+	(*x)--;
 }
 
 void app_hmc5883l_bmp085(void)
