@@ -17,6 +17,7 @@
 #include "app_rfid.h"
 #include "app_hmc5883l_bmp085.h"
 #include "app_watchdog.h"
+#include "app_zgb.h"
 
 void NVIC_Config(void)
 {
@@ -33,7 +34,7 @@ void NVIC_Config(void)
 	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
-	#if defined (CAR_DB44_V1_0_20130315_)
+	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 	
 	NVIC_InitStructure.NVIC_IRQChannel = I2C1_ER_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
@@ -55,10 +56,19 @@ void NVIC_Config(void)
 void board_init(void)
 {
 	uint64_t i;
+
+	#if 1
+	app_wdg_init();
+	app_wdg_start();
+	#endif
 	
 	NVIC_Config();
 	//SystemInit();	/*外部是12MHz振荡器，所以应该是108MHz系统频率*/
 
+	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	app_zgb_init();
+	#endif
+	
 	driv_systick_init();
 	app_usart_init();
 
@@ -80,18 +90,18 @@ void board_init(void)
 	app_beep_init();
 	#endif
 
-	i = ticks;
+/*	i = ticks;
 	i += 1*HZ;
 	while (i > ticks) ;
-
+*/
 	#if defined (CAR_DB44_V1_0_20130315_)
 //	app_lcd_init();
 	#endif
 
-	i = ticks;
+/*	i = ticks;
 	i += 5*HZ;
 	while (i > ticks) ;
-
+*/
 	#if defined (CAR_DB44_V1_0_20130315_)
 	app_voice_init();
 	#endif
@@ -100,13 +110,8 @@ void board_init(void)
 	//app_rfid_init();
 	#endif
 
-	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 	app_hmc5883l_bmp085_init();
-	#endif
-
-	#if 1
-	app_wdg_init();
-	app_wdg_start();
 	#endif
 }
 

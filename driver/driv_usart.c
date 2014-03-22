@@ -105,7 +105,9 @@ static void usart3_init(USART_InitTypeDef *USART_InitStructure)
 
 void usart4_init(USART_InitTypeDef *USART_InitStructure)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
+	uart4_init();
+	
+/*	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	// Enable UART clock
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
@@ -131,7 +133,7 @@ void usart4_init(USART_InitTypeDef *USART_InitStructure)
 	//USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
 
 	// Enable USART
-	USART_Cmd(UART4, ENABLE);		
+	USART_Cmd(UART4, ENABLE);*/
 }
 
 void usart5_init(USART_InitTypeDef *USART_InitStructure)

@@ -8,7 +8,7 @@
 #define HMC5883L	1
 #define GY26			2	/*模块:包含PIC单片机、HMC1022*/
 
-#define COMPASS_MODEL	GY26
+#define COMPASS_MODEL	HMC5883L
 
 struct adxl345_acc_ {
 	float x;/*角度*/

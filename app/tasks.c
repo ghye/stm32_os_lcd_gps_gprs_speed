@@ -25,7 +25,7 @@ void task_gprs(void *arg)
 
 		app_wdg_update_task_tick(0);
 		app_wdg_keeplibe();
-		os_task_delayms(700);
+		os_task_delayms(50);
 	}
 }
 
@@ -74,7 +74,7 @@ void task3(void *arg)
 		//app_rfid_proc();
 		#endif
 
-		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 		app_hmc5883l_bmp085();
 		#endif
 

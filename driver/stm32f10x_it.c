@@ -18,6 +18,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 
+#include "public.h"
+
 #if defined (CAR_DB44_V1_0_20130315_)
 #include "app_gprs.h"
 #include "driv_key.h"
@@ -583,6 +585,8 @@ void I2C1_ER_IRQHandler(void)
 {
 	#if defined (CAR_DB44_V1_0_20130315_)
 	mfrc522_err_it();
+	#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	I2C_err_it();
 	#endif
 }
 
@@ -661,6 +665,24 @@ void USART1_IRQHandler(void)
 	{
 		app_gprs_process_gprs_rbuf(USART_ReceiveData(USART1));
 	}
+
+	#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+
+	#include "driv_zgb.h"
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		driv_zgb_read_isr(USART_ReceiveData(USART1)); 
+	}
+
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	#include "app_gprs.h"
+	
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		app_gprs_process_gprs_rbuf(USART_ReceiveData(USART1));
+	}
 	
 	#endif
 }
@@ -674,7 +696,7 @@ void USART1_IRQHandler(void)
 *******************************************************************************/
 void USART2_IRQHandler(void)
 {
-	#if defined (CAR_DB44_V1_0_20130315_)
+	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_))
 	
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
@@ -689,7 +711,15 @@ void USART2_IRQHandler(void)
 		/* Read one byte from the receive data register */
 		app_gps_rbuf_hander(USART_ReceiveData(USART2)); 
 	}
-	
+
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		app_gps_rbuf_hander(USART_ReceiveData(USART2)); 
+	}
+
 	#endif
 }
 
@@ -702,6 +732,25 @@ void USART2_IRQHandler(void)
 *******************************************************************************/
 void USART3_IRQHandler(void)
 {
+	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+
+	#include "app_gps.h"
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		app_gps_rbuf_hander(USART_ReceiveData(USART3)); 
+	}
+
+	#elif 0//defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	#include "driv_zgb.h"
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		driv_zgb_read_isr(USART_ReceiveData(USART3)); 
+	}
+
+	#endif
 }
 
 /*******************************************************************************
@@ -847,6 +896,17 @@ void SPI3_IRQHandler(void)
 *******************************************************************************/
 void UART4_IRQHandler(void)
 {
+	#if defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	#include "driv_zgb.h"
+	if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		driv_zgb_read_isr(USART_ReceiveData(UART4)); 
+		//uart4_isr(USART_ReceiveData(UART4));
+	}
+	
+	#endif
 }
 
 /*******************************************************************************
@@ -865,6 +925,16 @@ void UART5_IRQHandler(void)
 		/* Read one byte from the receive data register */
 		app_gps_rbuf_hander(USART_ReceiveData(UART5)); 
 	}
+
+	#elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
+	
+	#include "driv_zgb.h"
+	if(USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		driv_zgb_read_isr(USART_ReceiveData(UART5)); 
+	}
+
 	#endif
 }
 

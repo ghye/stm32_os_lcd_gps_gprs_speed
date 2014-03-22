@@ -15,6 +15,19 @@
 
 #define USART_GPRS_NUM		1
 #define USART_GPS_NUM		2
+#define USART_ZGB_NUM		5
+
+#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+
+#define USART_GPRS_NUM		2
+#define USART_GPS_NUM		3
+#define USART_ZGB_NUM		1
+
+#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+#define USART_GPRS_NUM		1
+#define USART_GPS_NUM		2
+#define USART_ZGB_NUM		4 ///4 ÖØÐÂÒþÉäµ½
 
 #endif
 

@@ -12,12 +12,16 @@
 #include "app_usart.h"
 #include "driv_hmc5883l_bmp085.h"
 
-#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_))
+#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 
 #if defined(CAR_DB44_V1_0_20130315_)
 #define I2CX	I2C1
 #elif defined(DouLunJi_CAR_GBC_V1_2_130511_)
 #define I2CX	I2C2 
+#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+#define I2CX	I2C1
+#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+#define I2CX	I2C1
 #endif
 
 #define ADDR_HMC5883L	0x3C
@@ -78,6 +82,60 @@ static void driv_hmc5883l_bmp085_i2c_init(void)
 	I2C_DeInit(I2CX);
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+	
+	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+	I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+	I2C_InitStructure.I2C_OwnAddress1 = 0x00;//I2C1_SLAVE_ADDRESS7 << 1;
+	I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+	I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+	I2C_InitStructure.I2C_ClockSpeed = ClockSpeed;
+	I2C_Init(I2CX, &I2C_InitStructure);
+
+	I2C_Cmd(I2CX, ENABLE);
+
+	/* Enable I2C1 Error interrupt */
+	I2C_ITConfig(I2CX, I2C_IT_ERR, ENABLE);
+
+	#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+	
+	/* Configure I2C1 pins: SCL and SDA ----------------------------------------*/
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	I2C_DeInit(I2CX);
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+	
+	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+	I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+	I2C_InitStructure.I2C_OwnAddress1 = 0x00;//I2C1_SLAVE_ADDRESS7 << 1;
+	I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+	I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+	I2C_InitStructure.I2C_ClockSpeed = ClockSpeed;
+	I2C_Init(I2CX, &I2C_InitStructure);
+
+	I2C_Cmd(I2CX, ENABLE);
+
+	/* Enable I2C1 Error interrupt */
+	I2C_ITConfig(I2CX, I2C_IT_ERR, ENABLE);
+
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
+	
+	/* Configure I2C1 pins: SCL and SDA ----------------------------------------*/
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	I2C_DeInit(I2CX);
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
 	
 	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
 	I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
@@ -454,7 +512,7 @@ bool driv_hmc5883l_bmp085_read_angular(uint8_t *buf)
 	return true;
 }
 
-#if defined(DouLunJi_CAR_GBC_V1_2_130511_)
+#if (defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 /*IT ERR interrupt process*/
 void I2C_err_it(void)
 {

@@ -51,6 +51,66 @@ void app_usart_init(void)
 	com_para.port = USART_GPS_NUM;
 	com_para.twoStopBits = false;
 	com_init(&com_para);
+
+	/*for ZGB*/
+	com_para.baudrate = 115200;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_ZGB_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);	
+
+	#elif defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_)
+
+	/*for gprs*/
+	com_para.baudrate = 115200;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_GPRS_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);
+
+	/*for gps*/
+	com_para.baudrate = 9600;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_GPS_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);	
+
+	/*for ZGB*/
+	com_para.baudrate = 115200;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_ZGB_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);	
+
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+
+	/*for gprs*/
+	com_para.baudrate = 115200;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_GPRS_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);
+
+	/*for gps*/
+	com_para.baudrate = 9600;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_GPS_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);	
+
+	/*for ZGB*/
+	com_para.baudrate = 115200;
+	com_para.data_9bit = false;
+	com_para.parity = 0;
+	com_para.port = USART_ZGB_NUM;
+	com_para.twoStopBits = false;
+	com_init(&com_para);	
 	
 	#endif
 }

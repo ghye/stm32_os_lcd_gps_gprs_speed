@@ -5,7 +5,7 @@
 #include "app_gps.h"
 #include "app_nmea.h"
 
-#if ((defined (CAR_DB44_V1_0_20130315_)) || defined (DouLunJi_CAR_GBC_V1_2_130511_))
+#if ((defined (CAR_DB44_V1_0_20130315_)) || defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
 
 struct gps_device_t session;
 
