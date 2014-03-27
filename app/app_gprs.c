@@ -1008,40 +1008,51 @@ int32_t app_gprs_socket(void)
 	switch(gprs_info.gprs_status)
 	{
 		case GPRS_STATUS_NOINIT:
+			os_task_delayms(1000);
 			app_gprs_start_gprs_mode();
 			app_gprs_seqed_msgs_init();
 			app_gprs_send_ate0();
 			break;
 		case GPRS_STATUS_ATE:
+			os_task_delayms(1000);
 			app_gprs_send_get_imei();
 			break;
 		case GPRS_STATUS_GET_IMEI:
+			os_task_delayms(1000);
 			app_gprs_send_nettype();
 			break;
 		case GPRS_STATUS_NETTYPE:
+			os_task_delayms(1000);
 			app_gprs_send_apntype();
 			break;
 		case GPRS_STATUS_APNTYPE:
+			os_task_delayms(1000);
 			if(app_gprs_set_sbuf_imei() != 0 )
 				return -1;
 			app_gprs_send_srvtype();
 			break;			
 		case GPRS_STATUS_SRVTYPE:
+			os_task_delayms(1000);
 			app_gprs_send_conid();
 			break;
 		case GPRS_STATUS_CONID:
+			os_task_delayms(1000);
 			app_gprs_send_srvurl();
 			break;
 		case GPRS_STATUS_SRVURL:
+			os_task_delayms(1000);
 			app_gprs_send_socket_open();
 			break;
 		case GPRS_STATUS_SOCKET_OPEN:
+			os_task_delayms(1000);
 			app_gprs_check_socket_opend_succ();
 			break;
 		case GPRS_STATUS_SOCKET_OPEN_SUCC:
+			os_task_delayms(1000);
 			app_gprs_send_socket_tp_mode();
 			break;
 		case GPRS_STATUS_SOCKET_TP:
+			os_task_delayms(1000);
 			app_gprs_check_socket_tp_mode_succ();
 			break;
 		case GPRS_STATUS_SOCKET_TP_SUCC:
