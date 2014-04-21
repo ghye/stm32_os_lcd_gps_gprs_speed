@@ -29,6 +29,13 @@
 #define USART_GPS_NUM		2
 #define USART_ZGB_NUM		4 ///4 ÖØÐÂÒþÉäµ½
 
+#elif defined(CAR_TRUCK_1_5_140325_)
+
+#define USART_GPRS_NUM		1
+#define USART_GPS_NUM		4
+#define USART_ZGB_NUM		2
+#define USART_CAM_NUM		3
+
 #endif
 
 void app_usart_init(void);

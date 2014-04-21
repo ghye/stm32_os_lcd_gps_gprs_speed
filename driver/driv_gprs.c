@@ -68,6 +68,19 @@
 #define MG323_POWER_ON()		/*没有控制*/
 #define MG323_POWER_OFF()		
 
+#elif defined(CAR_TRUCK_1_5_140325_)
+
+#define PORT_RST_ON		GPIOB
+#define M_RST			GPIO_Pin_8
+#define M_ON			GPIO_Pin_9
+#define MG323_RESET() 	GPIO_SetBits(PORT_RST_ON, M_RST) /* 硬件复位>= 10ms */
+#define MG323_NORM() 	GPIO_ResetBits(PORT_RST_ON, M_RST)
+#define MG323_POWERSWITCH() 	GPIO_SetBits(PORT_RST_ON, M_ON)	/*开/关切换>=1s*/
+#define MG323_POWERNORM() 		GPIO_ResetBits(PORT_RST_ON, M_ON)
+
+#define MG323_POWER_ON()		/*没有控制*/
+#define MG323_POWER_OFF()		
+
 #endif
 
 void driv_gprs_rx_it_disable(void)
@@ -76,7 +89,7 @@ void driv_gprs_rx_it_disable(void)
 	
 	USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
 
-	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 
 	USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
 	
@@ -89,7 +102,7 @@ void driv_gprs_rx_it_enable(void)
 	
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
 
-	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	
@@ -207,6 +220,21 @@ void driv_gprs_init(void)
 	GPIO_Init(PORT_RST, &GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = M_ON;
 	GPIO_Init(PORT_ON, &GPIO_InitStructure);
+	MG323_POWERSWITCH();
+	MG323_NORM();
+	
+	driv_gprs_power_enable();
+
+	#elif defined(CAR_TRUCK_1_5_140325_)
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
+
+	GPIO_InitStructure.GPIO_Pin = M_RST;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(PORT_RST_ON, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = M_ON;
+	GPIO_Init(PORT_RST_ON, &GPIO_InitStructure);
 	MG323_POWERSWITCH();
 	MG323_NORM();
 	

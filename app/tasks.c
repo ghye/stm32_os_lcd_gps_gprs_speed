@@ -15,6 +15,7 @@
 #include "app_rfid.h"
 #include "app_hmc5883l_bmp085.h"
 #include "app_watchdog.h"
+#include "app_vc0706.h"
 
 void task_gprs(void *arg)
 {
@@ -34,6 +35,10 @@ void task2(void *arg)
 	while (1) {
 		#if defined (CAR_DB44_V1_0_20130315_)
 //		app_lcd_disp();
+		#endif
+
+		#if defined(CAR_TRUCK_1_5_140325_)
+		app_vc0706_prepared_data();
 		#endif
 
 		app_wdg_update_task_tick(1);
@@ -74,7 +79,7 @@ void task3(void *arg)
 		//app_rfid_proc();
 		#endif
 
-		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
+		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
 		app_hmc5883l_bmp085();
 		#endif
 

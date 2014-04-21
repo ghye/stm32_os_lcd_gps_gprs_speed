@@ -11,7 +11,7 @@
 #include "app_sys.h"
 
 
-#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
+#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
 
 #define IF_CHECK_DIM_ERR	0	/*当发生读取失败后是否做相关处理*/
 
@@ -52,9 +52,18 @@ static void adxl345_angle(struct adxl345_acc_ *adxl345_acc, int x, int y, int z)
 	tmp = y / sqrt((x*x+z*z));
 	adxl345_acc->y = atan(tmp) * 180 / 3.14159265;
 
+	#if 0
+	adxl345_acc->ax = kalman_acx_proc(x);
+ 	adxl345_acc->ay = kalman_acy_proc(y);
+	adxl345_acc->az = kalman_acz_proc(z);
+	adxl345_acc->ax *= resolution;
+	adxl345_acc->ay *= resolution;
+	adxl345_acc->az *= resolution;
+	#else
 	adxl345_acc->ax = x * resolution;
 	adxl345_acc->ay = y * resolution;
 	adxl345_acc->az = z * resolution;
+	#endif
 }
 
 static void l3g4200d_angular(struct l3g4200d_ang_ *l3g4200d_ang, int x, int y, int z)
@@ -63,9 +72,15 @@ static void l3g4200d_angular(struct l3g4200d_ang_ *l3g4200d_ang, int x, int y, i
 	l3g4200d_ang->y = y * 0.00875;
 	l3g4200d_ang->z = z * 0.00875;
 
+	#if 0
+	l3g4200d_ang->ax = kalman_anx_proc(x);
+	l3g4200d_ang->ay = kalman_any_proc(y);
+	l3g4200d_ang->az = kalman_anz_proc(z);
+	#else
 	l3g4200d_ang->ax = x;
 	l3g4200d_ang->ay = y;
 	l3g4200d_ang->az = z;
+	#endif
 }
 
 void app_hmc5883l_bmp085_init(void)
@@ -82,6 +97,201 @@ static void u16ToSigned(int *x)
 	(*x) -= 0xffff;
 	(*x)--;
 }
+
+#if 0
+static int kalman_cx_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_cy_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_cz_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_acx_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_acy_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+
+
+}
+
+static int kalman_acz_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_anx_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+
+static int kalman_any_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+
+
+}
+
+static int kalman_anz_proc(int vi)
+{
+	double vd;
+
+	double f[1] = {1};//系统状态转移矩阵Ok,k-1
+	double b[1] = {0.1};//动态噪声的系数矩阵Bk
+	double d[1] = {0};//系统输入信号的系数向量Dk
+	double h[1] = {1};//系统的观测矩阵Hk
+	double q[1] = {0.1};//动态噪声的协方差矩阵Qk
+	static double x[1] = {0};//系统的状态向量Xk
+	static double p[1] = {10};//系统的滤波误差方差矩阵Pk
+	double u[1] = {0};//系统的输入信号Vk
+	//double z[] = {120, 121, 122, 123, 144, 145, 146, 120};//系统的观测值Zk
+	double g[1], r = 0.1;//g系统的卡尔曼滤波增益Kk，r观测噪声的协方差Rk
+
+	vd = (double)vi;
+	alg_kalman(1/*n*/, 1/*m*/, 1/*len*/, f, d, u, b, q, h, r, &vd/*z*/, x, p, g);
+
+	return (int)(x[0]);
+}
+#endif
 
 void app_hmc5883l_bmp085(void)
 {
@@ -103,9 +313,18 @@ void app_hmc5883l_bmp085(void)
 		y = (buf[4] << 8) | buf[5];
 		if(y > 0x7fff)	u16ToSigned(&y);
 
+		#if 0
+		x = kalman_cx_proc(x);
+		hmc588cl_compass.ax = x;
+		x = kalman_cy_proc(y);
+		hmc588cl_compass.ay = x;
+		x = kalman_cz_proc(z);
+		hmc588cl_compass.az = x;
+		#else
 		hmc588cl_compass.ax = x;
 		hmc588cl_compass.ay = y;
 		hmc588cl_compass.az = z;
+		#endif
 
 		ax= atan2(y,x) * (180 / 3.14159265);// + 180; // angle in degrees
 		ay= atan2(z,x) * (180 / 3.14159265);// + 180; // angle in degrees

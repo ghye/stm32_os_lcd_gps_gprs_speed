@@ -13,6 +13,7 @@
 #include "app_hmc5883l_bmp085.h"
 #include "util.h"
 #include "app_zgb.h"
+#include "app_vc0706.h"
 
 #define GPRS_MAX_MSG_LEN 512
 
@@ -63,7 +64,7 @@ typedef enum{
 	GPRS_STATUS_MAX,
 }GPRS_MODULE_STATUS;
 
-#define GPRS_STATUS_TIMEOUT_S 40	/*s*/
+#define GPRS_STATUS_TIMEOUT_S 120	/*s*/
 uint64_t gprs_err_recoder = 0;
 
 struct _gprs_info {
@@ -412,9 +413,13 @@ static void app_gprs_send_srvurl(void)
 	{
 		gprs_info.gprs_status = GPRS_STATUS_SRVURL;
 		//gprs_send_cmd(1, SET_SRV_URL_1, strlen(SET_SRV_URL_1));
+		#if 0
 		while (strlen((void *)get_cur_srv()) == 0)
 			srvs_next();
 		driv_gprs_send_msg((void *)get_cur_srv(), strlen((void *)get_cur_srv()));
+		#else
+		driv_gprs_send_msg(SET_SRV_URL_1, strlen(SET_SRV_URL_1));
+		#endif
 
 	}
 	else if (app_gprs_get_seqed_msg("ERROR"))
@@ -436,7 +441,11 @@ static void app_gprs_send_socket_open(void)
 	else if (app_gprs_get_seqed_msg("ERROR"))
 	{
 		//gprs_send_cmd(1, SET_SRV_URL_1, strlen(SET_SRV_URL_1));
+		#if 0
 		driv_gprs_send_msg((void *)get_cur_srv(), strlen((void *)get_cur_srv()));
+		#else
+		driv_gprs_send_msg(SET_SRV_URL_1, strlen(SET_SRV_URL_1));
+		#endif
 	}
 	else {
 
@@ -579,7 +588,7 @@ static void app_gprs_make_gps_msg_imei(char *buf, struct gprmc_ *prmc)
 	strcat((void *)buf, "#");
 }
 
-#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 #include "app_usart.h"
 static void app_gprs_send_gps_zgb(void)
 {
@@ -614,7 +623,7 @@ static void app_gprs_discard_zgb(void)
 	char msg[L_MSG_MAX];
 
 	cnt = 0;
-	while (cnt < 128) {
+	while (cnt < 1280) {
 		app_zgb_proc(msg, &len, L_MSG_MAX);
 		if (len > 0) {
 			//driv_gprs_send_msg(msg, len);
@@ -676,7 +685,7 @@ static void app_gprs_send_key(void)
 }
 #endif
 
-#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
+#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
 
 static void get_ORT(char *inbuf, int *start, char *tobuf)
 {
@@ -703,9 +712,9 @@ static void get_ORT(char *inbuf, int *start, char *tobuf)
 
 static void app_gprs_send_three_dimensional(void)
 {
-	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 
-	#define DIM_INT_S	5
+	#define DIM_INT_S	3
 	#define L_MSG_MAX	128
 	
 	static uint64_t s_dim_ticks = 0;
@@ -731,7 +740,7 @@ static void app_gprs_send_three_dimensional(void)
 	}*/
 
 	cnt = 0;
-	while (cnt < 128) {
+	while (cnt < 20) {
 		app_zgb_proc(msg, &len, L_MSG_MAX);
 		if (len > 0) {
 			driv_gprs_send_msg(msg, len);
@@ -818,6 +827,13 @@ static bool app_gprs_status_recoder_read(void)
 
 static void app_gprs_reset(void)
 {
+	#if 0
+	driv_gprs_reset();
+	os_task_delayms(4000);
+	driv_gprs_norm();
+	os_task_delayms(5000);
+	
+	#else
 	driv_gprs_mon_norm();
 	os_task_delayms(1000);
 	driv_gprs_mon_reset();
@@ -826,6 +842,7 @@ static void app_gprs_reset(void)
 	os_task_delayms(1000);
 	driv_gprs_mon_reset();
 	os_task_delayms(5000);
+	#endif
 }
 
 static void app_gprs_check_status_err(void)
@@ -921,11 +938,11 @@ static void app_gprs_network_data(void)
 	#endif
 }
 
-#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 #include "app_usart.h"
 static void app_gprs_route_zgb(void)
 {
-	#define DIM_INT_S	8
+	#define DIM_INT_S	4
 	
 	static uint64_t s_dim_ticks = 0;
 	
@@ -949,6 +966,98 @@ static void app_gprs_route_zgb(void)
 	}
 }
 #endif
+
+#if defined(CAR_TRUCK_1_5_140325_)
+static char appcs_network_offline = 1;
+
+static void app_gprs_cam_offline_init(void)
+{
+	appcs_network_offline = 1;
+}
+
+static void app_gprs_cam_proc(void)
+{
+	#define APP_GPRS_CAM_DATA_SIZE		300
+	#define APP_GPRS_CAM_WF_ACK_TIMEOUT	8	/* s */
+	#define APP_GPRS_CAM_SEND_INT			1	/* s ·¢ËÍ¼ä¸ô */
+	#define APP_GPRS_CAM_PRECMD			(4 + 3 + 4 + 2 + 6)
+	#define APP_GPRS_CAM_SEND_H 			"U:"
+
+	enum app_gprs_cam_send_status_ {
+		APCSS_FREE = 0,
+		APCSS_WF_ACK,
+		APCSS_RESEND
+	};
+
+	static enum app_gprs_cam_send_status_ appcs_s = APCSS_FREE;
+	static int len;
+	static int head;
+	int index;
+	unsigned int flen;
+	static unsigned char *p;
+	static uint64_t appcs_wf_ack_tick = 0;
+	static uint64_t appcs_int_tick = 0;
+	char buf[24];
+
+	if (1 == appcs_network_offline) {
+		appcs_network_offline = 0;
+		if (APCSS_WF_ACK == appcs_s) {
+			appcs_s = APCSS_RESEND;
+		}
+	} 
+
+	switch (appcs_s) {
+	case APCSS_FREE:
+	if (appcs_int_tick + APP_GPRS_CAM_SEND_INT * HZ < ticks) {
+		app_vc0706_frame(&p, &len, APP_GPRS_CAM_DATA_SIZE, &head);
+		if (len > 0) {
+			//len += APP_GPRS_CAM_PRECMD;
+			flen = app_vc0706_frame_len();
+			index = head / APP_GPRS_CAM_DATA_SIZE;
+			sprintf(buf, "%s%.4X,%.3X,%.4X,%.2X#", APP_GPRS_CAM_SEND_H, flen, len, head, index);
+			driv_gprs_send_msg(buf, strlen(buf));
+			driv_gprs_send_msg(p, len);
+			appcs_int_tick = ticks;
+			appcs_wf_ack_tick = ticks;
+			appcs_s = APCSS_WF_ACK;
+		}
+	}
+	break;
+	case APCSS_WF_ACK:
+		/*if (1 == appcs_network_offline) {
+			appcs_network_offline = 0;
+			appcs_s = APCSS_RESEND;
+		} else */
+		{
+			if (app_gprs_get_seqed_msg("U:")) {
+				appcs_s = APCSS_FREE;
+			} else {
+				if (appcs_wf_ack_tick + APP_GPRS_CAM_WF_ACK_TIMEOUT * HZ < ticks)
+					appcs_s = APCSS_RESEND;
+			}
+		}
+	break;
+	case APCSS_RESEND:
+		flen = app_vc0706_frame_len();
+		index = head / APP_GPRS_CAM_DATA_SIZE;
+		sprintf(buf, "%s%.4X,%.3X,%.4X,%.2X#", APP_GPRS_CAM_SEND_H, flen, len, head, index);
+		driv_gprs_send_msg(buf, strlen(buf));
+		driv_gprs_send_msg(p, len);
+		appcs_wf_ack_tick = ticks;
+		appcs_s = APCSS_WF_ACK;
+	break;
+	default:
+	break;
+	}
+}
+#endif
+
+static void app_gprs_network_offline(void)
+{
+#if defined(CAR_TRUCK_1_5_140325_)
+	app_gprs_cam_offline_init();
+#endif
+}
 
 void app_gprs_init(void)
 {
@@ -975,7 +1084,7 @@ int32_t app_gprs_socket(void)
 	app_gprs_check_status_err();
 	app_gprs_network_data();
 
-	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 	if (gprs_info.gprs_status < GPRS_STATUS_SOCKET_TP_SUCC) {
 		app_gprs_route_zgb();
 		app_gprs_send_gps_zgb();
@@ -1008,51 +1117,52 @@ int32_t app_gprs_socket(void)
 	switch(gprs_info.gprs_status)
 	{
 		case GPRS_STATUS_NOINIT:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_start_gprs_mode();
 			app_gprs_seqed_msgs_init();
 			app_gprs_send_ate0();
+			app_gprs_network_offline();
 			break;
 		case GPRS_STATUS_ATE:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_get_imei();
 			break;
 		case GPRS_STATUS_GET_IMEI:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_nettype();
 			break;
 		case GPRS_STATUS_NETTYPE:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_apntype();
 			break;
 		case GPRS_STATUS_APNTYPE:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			if(app_gprs_set_sbuf_imei() != 0 )
 				return -1;
 			app_gprs_send_srvtype();
 			break;			
 		case GPRS_STATUS_SRVTYPE:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_conid();
 			break;
 		case GPRS_STATUS_CONID:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_srvurl();
 			break;
 		case GPRS_STATUS_SRVURL:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_socket_open();
 			break;
 		case GPRS_STATUS_SOCKET_OPEN:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_check_socket_opend_succ();
 			break;
 		case GPRS_STATUS_SOCKET_OPEN_SUCC:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_send_socket_tp_mode();
 			break;
 		case GPRS_STATUS_SOCKET_TP:
-			os_task_delayms(1000);
+			os_task_delayms(2000);
 			app_gprs_check_socket_tp_mode_succ();
 			break;
 		case GPRS_STATUS_SOCKET_TP_SUCC:
@@ -1071,8 +1181,12 @@ int32_t app_gprs_socket(void)
 			app_gprs_send_key();
 			#endif
 
-			#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_)|| defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
+			#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_)|| defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
 			app_gprs_send_three_dimensional();
+			#endif
+
+			#if defined(CAR_TRUCK_1_5_140325_)
+			app_gprs_cam_proc();
 			#endif
 			
 			app_gprs_status_recoder_reset();

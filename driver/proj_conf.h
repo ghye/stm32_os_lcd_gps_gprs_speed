@@ -9,6 +9,8 @@
 #define DouLunJi_AIS_BASE_STATION_V1_0_130513_
 #elif defined(DouLunJi_CAR_TRUCK_1_3_140303)
 #define DouLunJi_CAR_TRUCK_1_3_140303_
+#elif defined(CAR_TRUCK_1_5_140325)
+#define CAR_TRUCK_1_5_140325_
 #else
 #error "Please define project!!"
 #endif

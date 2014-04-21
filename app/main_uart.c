@@ -3,6 +3,8 @@
 #include "stm32f10x_gpio.h"
 #include "misc.h"
 
+#include "public.h"
+
 void uart4_RCC_Configuration(void);
 void uart4_GPIO_Configuration(void);
 void uart4_NVIC_Configuration(void);
@@ -136,7 +138,13 @@ void uart4_init(void)
 
 	uart4_GPIO_Configuration();
 
+#if defined(DouLunJi_CAR_TRUCK_1_3_140303_)
 	USART_InitStructure.USART_BaudRate = 115200;
+#elif defined(CAR_TRUCK_1_5_140325_)
+	USART_InitStructure.USART_BaudRate = 9600;
+#else
+#error "UART4 error"
+#endif
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;

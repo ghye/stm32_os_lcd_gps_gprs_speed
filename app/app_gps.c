@@ -45,6 +45,8 @@ struct gprmcs_record_ {
 };
 struct gprmcs_record_ gprmcs_record;
 
+struct gprmc_ now_gps;	/* 最新的gps信息 */
+
 static uint8_t gpsbuf[GPS_MAX_MSG_LEN];
 
 #define GPS_STATUS_TIMEOUT_S	40
@@ -58,6 +60,8 @@ static uint16_t GPS_INT_S = 30;
 static uint16_t GPS_INT_S = 30;
 #elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
 static uint16_t GPS_INT_S = 30;
+#elif defined(CAR_TRUCK_1_5_140325_)
+static uint16_t GPS_INT_S = 8;
 #endif
 
 static uint64_t gps_next_ticks;
@@ -239,6 +243,11 @@ void app_gps_gprmc_save(struct gprmc_ * gprmc)
 		if (gprmcs_record.head_s >= FIXED_TIME_RMC_MAX)
 			gprmcs_record.head_s = 0;
 	}
+}
+
+void app_gps_update_now_gps(struct gprmc_ * gprmc)
+{
+	memcpy(&now_gps, gprmc, sizeof(struct gprmc_));
 }
 
 void app_gps_init(void)

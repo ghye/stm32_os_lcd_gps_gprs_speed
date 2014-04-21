@@ -5,7 +5,7 @@
 #include "app_gps.h"
 #include "app_nmea.h"
 
-#if ((defined (CAR_DB44_V1_0_20130315_)) || defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_))
+#if ((defined (CAR_DB44_V1_0_20130315_)) || defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
 
 struct gps_device_t session;
 
@@ -29,8 +29,10 @@ int32_t app_nmea_parse(void *pgps)
 			flag = 2;
 			break;
 		case TYPE_GPRMC:
-			if (STATUS_FIX == session.nmea.nmea_u.gprmc.status )
+			if (STATUS_FIX == session.nmea.nmea_u.gprmc.status ) {
 				app_gps_gprmc_save(&session.nmea.nmea_u.gprmc);
+				app_gps_update_now_gps(&session.nmea.nmea_u.gprmc);
+			}
 			flag = 1;
 			break;
 		default:
