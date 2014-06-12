@@ -15,6 +15,8 @@
 #include "app_zgb.h"
 #include "app_vc0706.h"
 
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+
 #define GPRS_MAX_MSG_LEN 512
 
 #define ATE0 			"ATE0\x00D\x00A"
@@ -35,7 +37,7 @@
 #define SET_SRV_URL_4 "AT^SISS=0,address,\"socktcp://test.link-world.cn:6969\"\x00D\x00A"
 #define SET_SRV_URL_5 "AT^SISS=0,address,\"socktcp://203.88.202.116:6969\"\x00D\x00A"
 #else
-#define SET_SRV_URL_0 "AT^SISS=0,address,\"socktcp://113.105.139.109:6969\"\x00D\x00A"
+#define SET_SRV_URL_0 "AT^SISS=0,address,\"socktcp://%s\"\x00D\x00A"
 #define SET_SRV_URL_1 "AT^SISS=0,address,\"socktcp://113.105.139.109:6969\"\x00D\x00A"
 #define SET_SRV_URL_2 "AT^SISS=0,address,\"socktcp://113.105.139.109:6969\"\x00D\x00A"
 #define SET_SRV_URL_3 "AT^SISS=0,address,\"socktcp://113.105.139.109:6969\"\x00D\x00A"
@@ -115,7 +117,8 @@ static void srvs_init(void)
 	memset(&srvs, '\0', sizeof(struct srvs_));
 	srvs.server_sel = 0;
 	if (0 == strlen((void *)g_IP_DNS))
-		strcpy((void *)srvs.servers[0], (void *)g_IP_DNS);
+		//strcpy((void *)srvs.servers[0], (void *)g_IP_DNS);
+		strcpy((void *)srvs.servers[0], SET_SRV_URL_1);
 	else
 		sprintf((void *)srvs.servers[0], SET_SRV_URL_0, g_IP_DNS);
 	strcpy((void *)srvs.servers[1], SET_SRV_URL_1);
@@ -513,14 +516,24 @@ static int32_t app_gprs_check_socket_tp_mode_succ(void)
 static void app_gprs_send_imei(void)
 {
 	uint8_t imei[20];
-	uint8_t buf[20];
+	uint8_t buf[80];
 		
 	memcpy(imei, gprs_info.imei, 15);
 	imei[15] = '\0';
 	sprintf((void *)buf, "A:%s#", imei);	
 	driv_gprs_send_msg((void *)buf, strlen((void *)buf));
 
-	sprintf((void *)buf, "T:T:%ld#", ticks / HZ);
+	sprintf((void *)buf, "V:%s", FUN);
+	strcat((void *)buf, HVERSION);
+	strcat((void *)buf, SVERSION);
+	strcat((void *)buf, "_");
+	strcat((void *)buf, __DATE__);
+	strcat((void *)buf, " ");
+	strcat((void *)buf, __TIME__);
+	strcat((void *)buf, "#");
+	driv_gprs_send_msg((void *)buf, strlen((void *)buf));
+
+	sprintf((void *)buf, "T:T:%llu#", ticks / HZ);
 	driv_gprs_send_msg((void *)buf, strlen((void *)buf));
 }
 
@@ -596,7 +609,7 @@ static void app_gprs_send_gps_zgb(void)
 	int8_t flag;
 	uint8_t cnt;
 	struct gprmc_ *prmc;
-	int8_t time[13];
+	//int8_t time[13];
 	int8_t buf[80];
 	
 	cnt = 1;
@@ -608,7 +621,7 @@ static void app_gprs_send_gps_zgb(void)
 			return;
 		}
 
-		app_gprs_make_gps_msg_imei(buf, prmc);
+		app_gprs_make_gps_msg_imei((void *)buf, prmc);
 		com_send_nchar(USART_ZGB_NUM, (void *)buf, strlen((void *)buf));
 	}
 }
@@ -653,7 +666,7 @@ static void app_gprs_send_gps(void)
 			return;
 		}
 
-		app_gprs_make_gps_msg(buf, prmc);
+		app_gprs_make_gps_msg((void *)buf, prmc);
 		//app_gprs_make_gps_msg_imei(buf, prmc);
 		driv_gprs_send_msg((void *)buf, strlen((void *)buf));
 	}
@@ -716,6 +729,9 @@ static void app_gprs_send_three_dimensional(void)
 
 	#define DIM_INT_S	3
 	#define L_MSG_MAX	128
+
+	#define TEST_ZGB	0
+	#define TEST_ZGB_PORT	USART_ZGB_NUM
 	
 	static uint64_t s_dim_ticks = 0;
 	
@@ -726,6 +742,11 @@ static void app_gprs_send_three_dimensional(void)
 	//char graw[128];
 	char imei[16];
 	//char *p;
+
+	#if TEST_ZGB
+	int i;
+	char buf[64];
+	#endif
 
 	lticks = ticks;
 
@@ -743,9 +764,24 @@ static void app_gprs_send_three_dimensional(void)
 	while (cnt < 20) {
 		app_zgb_proc(msg, &len, L_MSG_MAX);
 		if (len > 0) {
+			#if TEST_ZGB
+			com_send_message(TEST_ZGB_PORT, "read ok:");
+			for (i = 0; i < len; i++) {
+				sprintf(buf, "%.2X (%c) ", msg[i], msg[i]);
+				com_send_string(TEST_ZGB_PORT, buf);
+			}
+			com_send_message(TEST_ZGB_PORT, "");
+			sprintf(buf, "%.2X,%.2X", msg[0], msg[len - 1]);
+			com_send_message(TEST_ZGB_PORT, buf);
+			#endif
+
 			driv_gprs_send_msg(msg, len);
 			cnt += len;
 		} else {
+			#if TEST_ZGB
+			com_send_message(TEST_ZGB_PORT, "read empty:");
+			#endif
+			
 			break;
 		}
 	}
@@ -874,7 +910,7 @@ static void process_net_reboot_cmd(void)
 {
 	#include "app_sys.h"
 	
-	int32_t i;
+	//int32_t i;
 	int32_t data;
 	int32_t start;
 	uint8_t buf[SEQED_MSGS_MAX_LEN];
@@ -1215,3 +1251,5 @@ void app_gprs_process_gprs_rbuf(uint8_t val)
 	if(gprs_info.rbuf_info.rbuf_index >= GPRS_MAX_MSG_LEN)
 		gprs_info.rbuf_info.rbuf_index = 0;
 }
+
+#endif

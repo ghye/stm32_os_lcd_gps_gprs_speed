@@ -40,14 +40,14 @@ void alg_lbb_get_single(char raw[], int rawMAX, int insert, int *Read, char *buf
 	if (flag == 1) {
 		if (i >= lread) {
 			if (maxlen >= i - lread + 1) {
-				strncpy(buf, raw + lread, i - lread + 1);
+				memcpy(buf, raw + lread, i - lread + 1);
 				*len = i - lread + 1;
 			}
 		} else {
 			if (maxlen >= rawMAX - lread + i + 1) {
-				strncpy(buf, raw + lread, rawMAX - lread);
+				memcpy(buf, raw + lread, rawMAX - lread);
 				*len = rawMAX - lread;
-				strncpy(buf + *len, raw, i + 1);
+				memcpy(buf + *len, raw, i + 1);
 				*len += i + 1;
 			}
 		}
@@ -60,4 +60,29 @@ void alg_lbb_get_single(char raw[], int rawMAX, int insert, int *Read, char *buf
 	} else {
 		*len = 0;
 	}
+}
+
+/*
+返回值: 0 -没有数据
+			1- 有数据
+*/
+int alg_lbb_get_char(char raw[], int rawMAX, int insert, int *Read, char *c)
+{
+	int r;
+	int linsert, lread;
+
+	linsert = insert;
+	lread = *Read;
+
+	r = 0;
+	if (linsert != lread) {
+		*c = raw[lread];
+		r = 1;
+		lread++;
+		if (lread >= rawMAX)
+			lread = 0;
+		*Read = lread;
+	}
+	
+	return r;
 }

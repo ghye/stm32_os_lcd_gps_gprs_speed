@@ -20,11 +20,17 @@
 
 #include "public.h"
 
+#include "driv_zgb.h"
+#include "app_net_usart.h"
+
 #if defined (CAR_DB44_V1_0_20130315_)
 #include "app_gprs.h"
 #include "driv_key.h"
 #include "driv_mfrc522.h"
 #endif
+
+#include "driv_coil.h"
+#include "app_coil.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -243,6 +249,14 @@ void RCC_IRQHandler(void)
 *******************************************************************************/
 void EXTI0_IRQHandler(void)
 {
+	#if defined(HC_CONTROLER_)
+	if (EXTI_GetITStatus(EXTI_Line0) != RESET)
+	{
+		EXTI_ClearITPendingBit(EXTI_Line0);
+		app_coil4_isr((unsigned char)driv_coil4_iolevel());
+		
+	}
+	#endif
 }
 
 /*******************************************************************************
@@ -254,6 +268,14 @@ void EXTI0_IRQHandler(void)
 *******************************************************************************/
 void EXTI1_IRQHandler(void)
 {
+	#if defined(HC_CONTROLER_)
+	if (EXTI_GetITStatus(EXTI_Line1) != RESET)
+	{
+		EXTI_ClearITPendingBit(EXTI_Line1);
+		app_coil3_isr((unsigned char)driv_coil3_iolevel());
+		
+	}
+	#endif
 }
 
 /*******************************************************************************
@@ -287,6 +309,14 @@ void EXTI3_IRQHandler(void)
 *******************************************************************************/
 void EXTI4_IRQHandler(void)
 {
+	#if defined(HC_CONTROLER_)
+	if (EXTI_GetITStatus(EXTI_Line4) != RESET)
+	{
+		EXTI_ClearITPendingBit(EXTI_Line4);
+		app_coil2_isr((unsigned char)driv_coil2_iolevel());
+		
+	}
+	#endif
 }
 
 /*******************************************************************************
@@ -473,6 +503,14 @@ void EXTI9_5_IRQHandler(void)
 	}
 
 	driv_key_process(key);
+
+	#elif defined(HC_CONTROLER_)
+	if (EXTI_GetITStatus(EXTI_Line5) != RESET)
+	{
+		EXTI_ClearITPendingBit(EXTI_Line5);
+		app_coil1_isr((unsigned char)driv_coil1_iolevel());
+		
+	}
 	#endif
 }
 
@@ -550,6 +588,15 @@ void TIM2_IRQHandler(void)
 *******************************************************************************/
 void TIM3_IRQHandler(void)
 {
+#if defined(HC_CONTROLER_)
+//com_send_message(1, "i1");	
+	if (TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET){
+		//com_send_message(1, "i2");	
+		TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
+		if((!voice_update_cnt) || (!--voice_update_cnt))
+			TIM_Cmd(TIM3, DISABLE);
+	}
+#endif
 }
 
 /*******************************************************************************
@@ -686,11 +733,17 @@ void USART1_IRQHandler(void)
 
 	#elif defined(CAR_TRUCK_1_5_140325_)
 
+	#include "app_gprs.h"
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 		app_gprs_process_gprs_rbuf(USART_ReceiveData(USART1));
 	}
-	
+
+	#elif defined(HC_CONTROLER_)
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		driv_zgb_read_isr(USART_ReceiveData(USART1));
+	}
 	#endif
 }
 
@@ -721,6 +774,7 @@ void USART2_IRQHandler(void)
 
 	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
 
+	#include "app_gps.h"
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		/* Read one byte from the receive data register */
@@ -734,6 +788,14 @@ void USART2_IRQHandler(void)
 	{
 		/* Read one byte from the receive data register */
 		driv_zgb_read_isr(USART_ReceiveData(USART2)); 
+	}
+
+	#elif defined(HC_CONTROLER_)
+
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		app_net_usart_isr(USART_ReceiveData(USART2)); 
 	}
 
 	#endif
@@ -775,6 +837,11 @@ void USART3_IRQHandler(void)
 		driv_zgb_read_isr(USART_ReceiveData(USART3)); 
 	}
 
+	#elif defined(HC_CONTROLER_)
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	{
+		driv_zgb2_read_isr(USART_ReceiveData(USART3));
+	}
 	#endif
 }
 
@@ -939,6 +1006,16 @@ void UART4_IRQHandler(void)
 		/* Read one byte from the receive data register */
 		app_gps_rbuf_hander(USART_ReceiveData(UART4)); 
 	}
+
+	#elif defined(HC_CONTROLER_)
+
+	#include "app_weighbridge.h"
+	if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
+	{
+		/* Read one byte from the receive data register */
+		app_weighbridge_isr(USART_ReceiveData(UART4)); 
+	}
+
 
 	#endif
 }

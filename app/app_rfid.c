@@ -8,11 +8,16 @@ uint8_t default_key[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 uint8_t g_mfrc522_buf[20];
 uint32_t g_rfid_serial_num = 0;
 
+static void app_rfid_num_uchar_to_uint(uint32_t *to, uint8_t *from)
+{
+	*to = (from[3] << 24)  | (from[2] << 16) | (from[1] << 8) | from[0];
+}
+
 static void app_rfid_warn(void)
 {
-	g_rfid_serial_num = (g_mfrc522_buf[3] << 24)  | (g_mfrc522_buf[2] << 16) | 
+/*	g_rfid_serial_num = (g_mfrc522_buf[3] << 24)  | (g_mfrc522_buf[2] << 16) | 
 								(g_mfrc522_buf[1] << 8) | g_mfrc522_buf[0];
-
+*/
 	app_beep_open();
 	os_task_delayms(5);
 	app_beep_close();
@@ -32,6 +37,7 @@ void app_rfid_proc(void)
 	if (!driv_rfid_anticoll(g_mfrc522_buf))
 		return;
 
+	app_rfid_num_uchar_to_uint(&g_rfid_serial_num, g_mfrc522_buf);
 	app_rfid_warn();
 
 	/*到处刷了一次卡，做相关处理*/

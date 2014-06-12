@@ -36,6 +36,13 @@
 #define USART_ZGB_NUM		2
 #define USART_CAM_NUM		3
 
+#elif defined(HC_CONTROLER_)
+
+#define USART_NET_NUM		2
+#define USART_ZGB1_NUM		1
+#define USART_ZGB2_NUM		3
+#define USART_WB_NUM		4	/* µØ°õ */
+
 #endif
 
 void app_usart_init(void);

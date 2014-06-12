@@ -10,6 +10,8 @@
 #include "app_gps.h"
 #include "app_nmea.h"
 
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+
 #define GPS_MAX_MSG_LEN	90	//128
 #define GPS_MAX_ARRY 		40	//20
 
@@ -296,3 +298,5 @@ void app_gps_rbuf_hander(uint8_t val)
 	if (gps_info.rbuf_info.rbuf_index[gps_info.rbuf_info.rbuf_arry_tail] < GPS_MAX_MSG_LEN -1)
 		gps_info.rbuf_info.rbuf_index[gps_info.rbuf_info.rbuf_arry_tail]++;
 }
+
+#endif

@@ -1,6 +1,6 @@
 #include "public.h"
 
-#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(HC_CONTROLER_)
 
 #include "driv_zgb.h"
 #include "app_zgb.h"
@@ -15,6 +15,17 @@ void app_zgb_proc(char *buf, int *len, int maxlen)
 	driv_zgb_get(buf, len, maxlen);		//0,00124B00025F1A85,-26
 }
 
+#if defined(HC_CONTROLER_)
+void app_zgb2_init(void)
+{
+	driv_zgb2_init();
+}
+
+void app_zgb2_proc(char *buf, int *len, int maxlen)
+{
+	driv_zgb2_get(buf, len, maxlen);		//0,00124B00025F1A85,-26
+}
+#endif
 
 #if 0
 

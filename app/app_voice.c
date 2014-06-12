@@ -3,7 +3,7 @@
 #include "driv_voice.h"
 #include "app_voice.h"
 
-#if defined (CAR_DB44_V1_0_20130315_)
+#if defined (CAR_DB44_V1_0_20130315_) || defined(HC_CONTROLER_)
 
 #define APP_VOICE_LEN	128
 
@@ -77,6 +77,7 @@ void app_voice_play(void)
 	static uint8_t d = 2;
 	int32_t data;
 
+#if 0
 	data = app_voice_data_read();
 	if (data >= 0) {
 		driv_voice_play(data);
@@ -86,15 +87,17 @@ void app_voice_play(void)
 		if (d > E_OVP_NEWORDER)
 			d = 2;
 	}*/
+#else
 
-/*	static uint8_t i = 0;
+	static uint8_t i = 0;
 
-	i += 2;
+	i += 1;
 
-	if (i > E_OVP_NEWORDER)
+	if (i > 108)//E_OVP_NEWORDER)
 		i = 2;
 	
-	driv_voice_play(i);*/
+	driv_voice_play(i);
+#endif
 }
 
 #endif

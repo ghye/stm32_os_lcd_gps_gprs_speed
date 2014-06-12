@@ -7,6 +7,8 @@
 #include "driv_usart.h"
 #include "driv_usart.h"
 
+void uart4_init(USART_InitTypeDef *USART_InitStructure);
+
 static void usart1_init(USART_InitTypeDef *USART_InitStructure)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -106,7 +108,7 @@ static void usart3_init(USART_InitTypeDef *USART_InitStructure)
 
 void usart4_init(USART_InitTypeDef *USART_InitStructure)
 {
-	uart4_init();
+	uart4_init(USART_InitStructure);
 	
 /*	GPIO_InitTypeDef GPIO_InitStructure;
 	

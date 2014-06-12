@@ -19,6 +19,11 @@
 #include "app_watchdog.h"
 #include "app_zgb.h"
 #include "app_vc0706.h"
+#include "app_cpu_id.h"
+#include "app_net_usart.h"
+#include "app_ir.h"
+#include "app_coil.h"
+#include "app_weighbridge.h"
 
 void NVIC_Config(void)
 {
@@ -59,15 +64,19 @@ void board_init(void)
 	uint64_t i;
 
 	#if 1
-	//app_wdg_init();
-	//app_wdg_start();
+	app_wdg_init();
+	app_wdg_start();
 	#endif
 	
 	NVIC_Config();
 	//SystemInit();	/*外部是12MHz振荡器，所以应该是108MHz系统频率*/
 
-	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	#if defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(HC_CONTROLER_)
 	app_zgb_init();
+	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_zgb2_init();
 	#endif
 	
 	driv_systick_init();
@@ -78,10 +87,14 @@ void board_init(void)
 	#endif
 
 //	app_rtc_init();
-	
-	app_gprs_init();
 
+	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	app_gprs_init();
+	#endif
+
+	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 	app_gps_init();
+	#endif
 
 	#if defined (CAR_DB44_V1_0_20130315_)
 	app_key_init();
@@ -96,19 +109,19 @@ void board_init(void)
 	while (i > ticks) ;
 */
 	#if defined (CAR_DB44_V1_0_20130315_)
-//	app_lcd_init();
+	app_lcd_init();
 	#endif
 
 /*	i = ticks;
 	i += 5*HZ;
 	while (i > ticks) ;
 */
-	#if defined (CAR_DB44_V1_0_20130315_)
+	#if defined (CAR_DB44_V1_0_20130315_) || defined(HC_CONTROLER_)
 	app_voice_init();
 	#endif
 
 	#if defined (CAR_DB44_V1_0_20130315_)
-	//app_rfid_init();
+	app_rfid_init();
 	#endif
 
 	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
@@ -118,5 +131,23 @@ void board_init(void)
 	#if defined(CAR_TRUCK_1_5_140325_)
 	app_vc0706_init();
 	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_net_usart_init();
+	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_ir_init();
+	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_coil_init();
+	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_weighbridge_init();
+	#endif
+
+	app_cpu_id_init();
 }
 

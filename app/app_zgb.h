@@ -6,5 +6,7 @@
 
 void app_zgb_init(void);
 void app_zgb_proc(char *buf, int *len, int maxlen);
+void app_zgb2_init(void);
+void app_zgb2_proc(char *buf, int *len, int maxlen);
 
 #endif

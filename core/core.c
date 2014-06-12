@@ -1,9 +1,11 @@
 #include "core.h"
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "driv_systick.h"
 #include "app_usart.h"
+#include "public.h"
 
 //任务大小
 #define START_STK_SIZE 1024	//128
@@ -129,8 +131,8 @@ void os_task_idle(void *arg)
 		buf[0]='\0';
 		for (i=0; i<=START_MAX_TSK; i++)
 			sprintf((void *)(buf + strlen((void *)buf)), "%u,%u;", OS_TASK_BLOCK[i].os_cur_status, OS_TASK_BLOCK[i].os_delay_ticks);
-		sprintf((void *)(buf + strlen((void *)buf)), "%u;", ticks);
-		com_send_message(USART_GPS_NUM, (void *)buf);
+		sprintf((void *)(buf + strlen((void *)buf)), "%llu;", ticks);
+		//com_send_message(USART_GPS_NUM, (void *)buf);
 
 		i = next_switch_task(0);
 		if (OS_TASK_BLOCK[i].os_cur_status != TASK_DELAY) {

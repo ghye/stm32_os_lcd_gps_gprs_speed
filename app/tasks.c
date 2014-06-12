@@ -16,13 +16,20 @@
 #include "app_hmc5883l_bmp085.h"
 #include "app_watchdog.h"
 #include "app_vc0706.h"
+#include "app_hc_controler_jobs.h"
 
 void task_gprs(void *arg)
 {
 	while (1) {
+		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 		app_gprs_clean_seqed_msgs();
 		app_gprs_form_seqed_msgs();
 		app_gprs_socket();
+		#endif
+
+		#if defined(HC_CONTROLER_)
+		app_hc_controler_task3();
+		#endif
 
 		app_wdg_update_task_tick(0);
 		app_wdg_keeplibe();
@@ -34,7 +41,7 @@ void task2(void *arg)
 {
 	while (1) {
 		#if defined (CAR_DB44_V1_0_20130315_)
-//		app_lcd_disp();
+		app_lcd_disp();
 		#endif
 
 		#if defined(CAR_TRUCK_1_5_140325_)
@@ -71,12 +78,12 @@ void task2(void *arg)
 void task3(void *arg)
 {
 	while (1) {
-		#if defined (CAR_DB44_V1_0_20130315_)
+		#if defined (CAR_DB44_V1_0_20130315_) || defined(HC_CONTROLER_)
 		app_voice_play();
 		#endif
 
 		#if defined (CAR_DB44_V1_0_20130315_)
-		//app_rfid_proc();
+		app_rfid_proc();
 		#endif
 
 		#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
@@ -91,7 +98,9 @@ void task3(void *arg)
 void task4(void *arg)
 {
 	while (1) {
+		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
 		app_gps_parse();
+		#endif
 
 		#if defined (CAR_DB44_V1_0_20130315_)
 		app_speed_calc();

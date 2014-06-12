@@ -8,6 +8,8 @@
 #include "driv_systick.h"
 #include "driv_gprs.h"
 
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+
 #if defined (CAR_DB44_V1_0_20130315_)
 
 #define PORT_RST_ON GPIOD
@@ -243,3 +245,4 @@ void driv_gprs_init(void)
 	#endif
 }
 
+#endif

@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "stm32f10x_usart.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
@@ -119,10 +123,10 @@ void uart4_NVIC_Configuration(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-void uart4_init(void)
+void uart4_init(USART_InitTypeDef *USART_InitStructure)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
+	//USART_InitTypeDef USART_InitStructure;
 
 	USART_Cmd(UART4, DISABLE);
 	USART_ITConfig(UART4, USART_IT_RXNE, DISABLE);
@@ -137,7 +141,7 @@ void uart4_init(void)
 	NVIC_Init(&NVIC_InitStructure);
 
 	uart4_GPIO_Configuration();
-
+#if 0
 #if defined(DouLunJi_CAR_TRUCK_1_3_140303_)
 	USART_InitStructure.USART_BaudRate = 115200;
 #elif defined(CAR_TRUCK_1_5_140325_)
@@ -153,6 +157,9 @@ void uart4_init(void)
 
 	/* Configure USARTy */
 	USART_Init(UART4, &USART_InitStructure);
+#else
+	USART_Init(UART4, USART_InitStructure);
+#endif
 	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
 	USART_Cmd(UART4, ENABLE);
 }
