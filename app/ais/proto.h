@@ -393,7 +393,7 @@ struct ais_t
 #define DAC8FID21_HUMIDITY_NOT_VAILABLE		127
 			    /* some trailing fields are missing */
 			} wmo_obs;
-		    };
+		    }u_dac1fid21;
 	        } dac1fid21;
 		/*** WORK IN PROGRESS ENDS HERE ***/
 		/* IMO289 - Dangerous Cargo Indication */
@@ -898,7 +898,7 @@ struct ais_t
 		    uint32_t to_port;	/* dimension to port */
 		    uint32_t to_starboard;	/* dimension to starboard */
 		} dim;
-	    };
+	    }s_type24;
 	} type24;
 	/* Type 25 - Addressed Binary Message */
 	struct {

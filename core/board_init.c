@@ -24,6 +24,8 @@
 #include "app_ir.h"
 #include "app_coil.h"
 #include "app_weighbridge.h"
+#include "app_red_green.h"
+
 
 void NVIC_Config(void)
 {
@@ -146,6 +148,10 @@ void board_init(void)
 
 	#if defined(HC_CONTROLER_)
 	app_weighbridge_init();
+	#endif
+
+	#if defined(HC_CONTROLER_)
+	app_red_green_init();
 	#endif
 
 	app_cpu_id_init();

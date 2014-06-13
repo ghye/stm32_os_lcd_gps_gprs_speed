@@ -13,8 +13,6 @@ static int head;
 static int tail;
 static char net_read_buf[NET_READ_BUF_LEN];
 
-static void app_net_usart_send_dma(unsigned char *buf, int len);
-
 void app_net_usart_init(void)
 {
 	driv_net_usart_init();
@@ -33,17 +31,12 @@ void app_net_usart_isr(unsigned char v)
 
 void app_net_usart_send(char *buf, int len)
 {
-	#if 1
+	#if 0
 	com_send_nchar(USART_NET_NUM, buf, len);
 	#else
-	app_net_usart_send_dma((void *)buf, len);
+	driv_net_usart_tx_dma_write_data((unsigned char *)buf, len);
+	driv_net_usart_tx_dma_reload_normal();
 	#endif
-}
-
-static void app_net_usart_send_dma(unsigned char *buf, int len)
-{
-	driv_net_usart_tx_dma_set(buf, len);
-	driv_net_usart_tx_dma_action();
 }
 
 #endif

@@ -13,6 +13,7 @@
 void app_hc_controler_task3(void)
 {
 	#define LBUF_LEN	80
+	int i;
 	int len;
 	char buf[LBUF_LEN];
 
@@ -21,24 +22,44 @@ void app_hc_controler_task3(void)
 
 	}
 
+	i = 0;
+	lp_zgb:
 	app_zgb_proc(buf, &len, LBUF_LEN);
 	if (len > 0) {
 		app_net_usart_send(buf, len);
+		i += len;
+		if (i < 720)
+			goto lp_zgb;
 	}
 
+	i = 0;
+	lp_zgb2:
 	app_zgb2_proc(buf, &len, LBUF_LEN);
 	if (len > 0) {
 		app_net_usart_send(buf, len);
+		i += len;
+		if (i < 720)
+			goto lp_zgb2;
 	}
 
+	i = 0;
+	lp_ir:
 	app_ir_proc(buf, &len, LBUF_LEN);
 	if (len > 0) {
 		app_net_usart_send(buf, len);
+		i++;
+		if (i < 50)
+			goto lp_ir;
 	}
-	
+
+	i = 0;
+	lp_coil:
 	app_coil_proc(buf, &len, LBUF_LEN);
 	if (len > 0) {
 		app_net_usart_send(buf, len);
+		i++;
+		if (i < 50)
+			goto lp_coil;
 	}
 
 	app_weighbridge_proc(buf, &len, LBUF_LEN);

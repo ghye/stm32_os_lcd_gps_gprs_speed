@@ -31,6 +31,7 @@
 
 #include "driv_coil.h"
 #include "app_coil.h"
+#include "driv_net_usart.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -395,6 +396,12 @@ void DMA1_Channel6_IRQHandler(void)
 *******************************************************************************/
 void DMA1_Channel7_IRQHandler(void)
 {
+	#if defined(HC_CONTROLER_)
+	if(DMA_GetITStatus(DMA1_IT_TC7)) {
+		driv_net_usart_tx_dma_disable();
+		DMA_ClearITPendingBit(DMA1_IT_GL7 | DMA1_IT_GL7 | DMA1_IT_HT7 | DMA1_IT_TE7);
+	}
+	#endif
 }
 
 /*******************************************************************************

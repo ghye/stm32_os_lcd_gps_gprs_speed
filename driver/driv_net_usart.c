@@ -4,6 +4,7 @@
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_gpio.h>
 #include "driv_net_usart.h"
+#include "alg_ping_pong_dual_buf.h"
 
 #if defined(HC_CONTROLER_)
 
@@ -19,15 +20,12 @@
 #define NET_TX_DMA_FLAG		DMA1_FLAG_TC7
 
 #define WILL_SET				0
+#define NET_TX_BUF_LEN			2000
 
 static char isr_running;
 static DMA_InitTypeDef net_txDMA_InitStructure;
-
-void driv_net_usart_tx_dma_reload_isr(void);
-void driv_net_usart_tx_dma_reload(void);
-void driv_net_usart_tx_dma_enable(void);
-void driv_net_usart_tx_dma_disable(void);
-bool driv_net_usart_tx_dma_is_finished(void);
+struct alg_ppdb_struct ppdb;
+unsigned char net_tx_buf[2][NET_TX_BUF_LEN];
 
 static void driv_net_usart_tx_dma_running_set(void);
 static void driv_net_usart_tx_dma_running_reset(void);
@@ -49,19 +47,14 @@ void driv_net_usart_init(void)
 
 	GPIO_SetBits(RS485_TX_E_PORT, RS485_TX_E_PIN);
 	GPIO_ResetBits(RS485_RX_E_PORT, RS485_RX_E_PIN);
+
+	#if 1
+	alg_ppdb_init(&ppdb, &net_tx_buf[0][0], NET_TX_BUF_LEN);
+	driv_net_usart_tx_dma_init();
+	#endif
 }
 
-void driv_net_usart_tx_dma_set(unsigned char *buf, int len)
-{
-
-}
-
-void driv_net_usart_tx_dma_action(void)
-{
-
-}
-
-static void driv_net_usart_tx_dma_init(void)
+void driv_net_usart_tx_dma_init(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
 	
@@ -72,6 +65,7 @@ static void driv_net_usart_tx_dma_init(void)
 	NVIC_Init(&NVIC_InitStructure);
 	
 	//DMA_DeInit(AIS_RX_DMA_Channel);  
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 	DMA_Cmd(NET_TX_DMA_Channel, DISABLE);
 	DMA_SetCurrDataCounter(NET_TX_DMA_Channel, WILL_SET);
 	net_txDMA_InitStructure.DMA_PeripheralBaseAddr = NET_TX_BASE;
@@ -93,17 +87,24 @@ static void driv_net_usart_tx_dma_init(void)
 	driv_net_usart_tx_dma_running_reset();
 }
 
-void driv_net_usart_tx_dma_reload_isr(void)
+int driv_net_usart_tx_dma_write_data(unsigned char *buf, int len)
+{
+	return alg_ppdb_write(&ppdb, buf, len);
+}
+
+void driv_net_usart_tx_dma_reload(void)
 {
 	int len;
 	unsigned char *p;
-	
-	//app_net_usart_tx_data_get(&p, &len);
+
+	alg_ppdb_write_inf(&ppdb, &p, &len);
 	if (len <= 0) {
 		driv_net_usart_tx_dma_disable();
 		driv_net_usart_tx_dma_running_reset();
 		return;
 	}
+	alg_ppdb_swap(&ppdb);
+	
 	DMA_Cmd(NET_TX_DMA_Channel, DISABLE);
 	DMA_SetCurrDataCounter(NET_TX_DMA_Channel, (uint16_t)len);
 	net_txDMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)p;
@@ -113,10 +114,10 @@ void driv_net_usart_tx_dma_reload_isr(void)
 	driv_net_usart_tx_dma_running_set();
 }
 
-void driv_net_usart_tx_dma_reload(void)
+void driv_net_usart_tx_dma_reload_normal(void)
 {
 	if (0 == driv_net_usart_tx_dma_running_is_set()) {
-		driv_net_usart_tx_dma_reload_isr();
+		driv_net_usart_tx_dma_reload();
 	}
 }
 
@@ -128,17 +129,9 @@ void driv_net_usart_tx_dma_enable(void)
 
 void driv_net_usart_tx_dma_disable(void)
 {
+	driv_net_usart_tx_dma_running_reset();
 	USART_DMACmd(NET_USART, USART_DMAReq_Tx, DISABLE);
 	DMA_Cmd(NET_TX_DMA_Channel, DISABLE);
-}
-
-bool driv_net_usart_tx_dma_is_finished(void)
-{
-	if(DMA_GetFlagStatus(NET_TX_DMA_FLAG) == SET)
-	{
-		return true;
-	}	
-	return false;
 }
 
 static void driv_net_usart_tx_dma_running_set(void)
