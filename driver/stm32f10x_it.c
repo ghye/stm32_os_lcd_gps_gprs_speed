@@ -798,7 +798,6 @@ void USART2_IRQHandler(void)
 	}
 
 	#elif defined(HC_CONTROLER_)
-
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		/* Read one byte from the receive data register */

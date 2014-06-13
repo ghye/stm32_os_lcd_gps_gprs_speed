@@ -7,6 +7,7 @@
 #include "app_weighbridge.h"
 #include "app_cpu_id.h"
 #include "app_hc_controler_jobs.h"
+#include "app_T_cmd.h"
 
 #if defined(HC_CONTROLER_)
 
@@ -17,9 +18,14 @@ void app_hc_controler_task3(void)
 	int len;
 	char buf[LBUF_LEN];
 
+	i = 0;
+	lp_net:
 	app_net_usart_proc(buf, &len, LBUF_LEN);
 	if (len > 0) {
-
+		app_T_cmd_proc(buf, len);
+		i += len;
+		if (i < 720)
+			goto lp_net;
 	}
 
 	i = 0;
