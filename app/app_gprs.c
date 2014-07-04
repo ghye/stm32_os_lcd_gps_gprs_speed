@@ -15,7 +15,7 @@
 #include "app_zgb.h"
 #include "app_vc0706.h"
 
-#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 #define GPRS_MAX_MSG_LEN 512
 
@@ -1003,7 +1003,7 @@ static void app_gprs_route_zgb(void)
 }
 #endif
 
-#if defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 static char appcs_network_offline = 1;
 
 static void app_gprs_cam_offline_init(void)
@@ -1090,7 +1090,7 @@ static void app_gprs_cam_proc(void)
 
 static void app_gprs_network_offline(void)
 {
-#if defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 	app_gprs_cam_offline_init();
 #endif
 }
@@ -1221,7 +1221,7 @@ int32_t app_gprs_socket(void)
 			app_gprs_send_three_dimensional();
 			#endif
 
-			#if defined(CAR_TRUCK_1_5_140325_)
+			#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 			app_gprs_cam_proc();
 			#endif
 			

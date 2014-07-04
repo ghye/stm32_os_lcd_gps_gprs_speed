@@ -87,7 +87,7 @@ void app_hc_controler_task2(void)
 
 void app_hc_controler_task1(void)
 {
-	//app_voice_proc();
+	//app_voice_play();
 }
 
 #endif

@@ -21,7 +21,7 @@
 void task_gprs(void *arg)
 {
 	while (1) {
-		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 		app_gprs_clean_seqed_msgs();
 		app_gprs_form_seqed_msgs();
 		app_gprs_socket();
@@ -44,7 +44,7 @@ void task2(void *arg)
 		app_lcd_disp();
 		#endif
 
-		#if defined(CAR_TRUCK_1_5_140325_)
+		#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 		app_vc0706_prepared_data();
 		#endif
 
@@ -98,7 +98,7 @@ void task3(void *arg)
 void task4(void *arg)
 {
 	while (1) {
-		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+		#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 		app_gps_parse();
 		#endif
 

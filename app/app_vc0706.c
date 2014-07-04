@@ -1,6 +1,6 @@
 #include "public.h"
 
-#if defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 #include "core.h"
 #include "driv_systick.h"

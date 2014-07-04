@@ -10,7 +10,7 @@
 #include "app_gps.h"
 #include "app_nmea.h"
 
-#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 #define GPS_MAX_MSG_LEN	90	//128
 #define GPS_MAX_ARRY 		40	//20
@@ -63,6 +63,8 @@ static uint16_t GPS_INT_S = 30;
 #elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
 static uint16_t GPS_INT_S = 30;
 #elif defined(CAR_TRUCK_1_5_140325_)
+static uint16_t GPS_INT_S = 8;
+#elif defined(CAR_TRUCK_1_3_140303_)
 static uint16_t GPS_INT_S = 8;
 #endif
 

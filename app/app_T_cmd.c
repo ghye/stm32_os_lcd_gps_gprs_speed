@@ -3,11 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "public.h"
+
 #include "app_sys.h"
 #include "app_red_green.h"
 #include "app_brake_gate.h"
 #include "app_net_usart.h"
 #include "app_T_cmd.h"
+#include "app_voice.h"
+
+#if defined(HC_CONTROLER_)
 
 static void app_mk_TY_cmd(char *buf, int num)
 {
@@ -32,7 +37,34 @@ static char *app_this_cmd_check(char *buf, int len, char *str)
 
 static void app_voice_action(char *buf, int len)
 {
+	int i;
+	int num;
+	unsigned char v;
+	char lbuf[16];
+	char *p;
 
+	//T:I:0,010A#
+	p = buf;
+	for (i = 0; i < len; i++)
+		if (p[i] == ',')
+			break;
+	if (i >= len)
+		return;
+	strncpy(lbuf, p, i);
+	lbuf[i] = '\0';
+	num = strtol(lbuf, NULL, 10);
+	p += i + 1;
+	len -= i + 1;
+
+	for (i = 0; i < len / 2; i++) {
+		memcpy(lbuf, p + i * 2, 2);
+		lbuf[2] = '\0';
+		v = strtol(lbuf, NULL, 16);
+		app_voice_data_insert(&v, 1);
+	}
+	
+	app_mk_TY_cmd(lbuf, num);
+	app_net_usart_send(lbuf, strlen(lbuf));
 }
 
 static void app_red_green_action(char *buf, int len)
@@ -103,6 +135,7 @@ static void app_brake_gate_action(char *buf, int len)
 	char *p;
 
 	//T:L:1234,0,1#
+	s = GATE_NONE;
 	p = buf;
 	for (i = 0; i < len; i++)
 		if (p[i] == ',')
@@ -184,3 +217,5 @@ char app_T_cmd_proc(char *buf, int len)
 	done:
 	return 1;
 }
+
+#endif

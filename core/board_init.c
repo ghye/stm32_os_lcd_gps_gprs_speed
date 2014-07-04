@@ -90,11 +90,11 @@ void board_init(void)
 
 //	app_rtc_init();
 
-	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 	app_gprs_init();
 	#endif
 
-	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 	app_gps_init();
 	#endif
 
@@ -130,7 +130,7 @@ void board_init(void)
 	app_hmc5883l_bmp085_init();
 	#endif
 
-	#if defined(CAR_TRUCK_1_5_140325_)
+	#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 	app_vc0706_init();
 	#endif
 
@@ -154,6 +154,8 @@ void board_init(void)
 	app_red_green_init();
 	#endif
 
+	#if defined(HC_CONTROLER_)
 	app_cpu_id_init();
+	#endif
 }
 

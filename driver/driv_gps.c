@@ -5,7 +5,7 @@
 #include "driv_systick.h"
 #include "driv_gps.h"
 
-#if  (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
+#if  (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_))
 
 #if defined (CAR_DB44_V1_0_20130315_)
 
@@ -24,7 +24,7 @@
 #define GPS_PWR_OFF()		GPIO_SetBits(GPIOB, GPIO_Pin_8)
 #define GPS_PWR_ON()		GPIO_ResetBits(GPIOB, GPIO_Pin_8)
 
-#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_3_140303_)
 
 #define GPS_PWR_OFF()		GPIO_SetBits(GPIOB, GPIO_Pin_8)
 #define GPS_PWR_ON()		GPIO_ResetBits(GPIOB, GPIO_Pin_8)
@@ -38,7 +38,7 @@
 
 void driv_gps_power_reset(void)
 {
-	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_))
+	#if (defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_))
 	
 	GPS_PWR_OFF();
 	os_task_delayms(2000);
@@ -92,7 +92,7 @@ void driv_gps_init(void)
 	
 	GPS_PWR_ON();
 
-	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_3_140303_)
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;

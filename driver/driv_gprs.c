@@ -8,7 +8,7 @@
 #include "driv_systick.h"
 #include "driv_gprs.h"
 
-#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_DB44_V1_0_20130315_) || defined(DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_AIS_BASE_STATION_V1_0_130513_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 #if defined (CAR_DB44_V1_0_20130315_)
 
@@ -56,7 +56,7 @@
 #define MG323_POWER_ON()	GPIO_SetBits(PORT_MG323_PWR, MG323_PWR_PIN)
 #define MG323_POWER_OFF()	GPIO_ResetBits(PORT_MG323_PWR, MG323_PWR_PIN)
 
-#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_3_140303_)
 
 #define PORT_ON		GPIOB
 #define PORT_RST	GPIOA
@@ -91,7 +91,7 @@ void driv_gprs_rx_it_disable(void)
 	
 	USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
 
-	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 	USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
 	
@@ -104,7 +104,7 @@ void driv_gprs_rx_it_enable(void)
 	
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
 
-	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_)
+	#elif defined (DouLunJi_CAR_GBC_V1_2_130511_) || defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	
@@ -211,7 +211,7 @@ void driv_gprs_init(void)
 	
 	driv_gprs_power_enable();
 
-	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_)
+	#elif defined(DouLunJi_CAR_TRUCK_1_3_140303_) || defined(CAR_TRUCK_1_3_140303_)
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB , ENABLE);
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);

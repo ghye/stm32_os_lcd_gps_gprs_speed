@@ -307,7 +307,9 @@ void driv_voice_play(enum e_otp_voice_pluses w)
 	do {
 		while(driv_voice_busy()) 
 			os_task_delayms(1);
+		os_task_delayms(15);
 		driv_voice_rest();
+		os_task_delayms(80);
 		voice_update_cnt = w;
 		#if (TYPE_VOICE_DEV == TYPE_OTP)
 		TIM_Cmd(TIM1, ENABLE);

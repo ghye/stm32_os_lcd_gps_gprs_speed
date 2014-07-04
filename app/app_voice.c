@@ -5,7 +5,7 @@
 
 #if defined (CAR_DB44_V1_0_20130315_) || defined(HC_CONTROLER_)
 
-#define APP_VOICE_LEN	128
+#define APP_VOICE_LEN	256
 
 struct app_voice_data_ {
 	uint16_t head;
@@ -74,13 +74,13 @@ void app_voice_init(void)
 
 void app_voice_play(void)
 {
-	static uint8_t d = 2;
+	//static uint8_t d = 2;
 	int32_t data;
 
-#if 0
+#if 1
 	data = app_voice_data_read();
 	if (data >= 0) {
-		driv_voice_play(data);
+		driv_voice_play((enum e_otp_voice_pluses)data);
 	} /*else {
 		app_voice_data_insert(&d, 1);
 		d += 2;

@@ -13,7 +13,7 @@
 #define IR_LEN		128
 #define IR_ISR_LEN	64
 
-#define IR_TIMER		2	/* √Î */
+#define IR_TIMER		1	/* √Î */
 
 static int head1;
 static int tail1;

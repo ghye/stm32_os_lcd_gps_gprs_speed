@@ -15,7 +15,7 @@
 #define DouLunJi_AIS_BASE_STATION_V1_0_130513_
 #define FUN			"aisBaseStation"
 #define HVERSION	"H1.0.130513"
-#elif defined(DouLunJi_CAR_TRUCK_1_3_140303)
+#elif defined(DouLunJi_CAR_TRUCK_1_3_140303)	/*与1.4板一样的原理图*/
 #define DouLunJi_CAR_TRUCK_1_3_140303_
 #define FUN			"car"
 #define HVERSION	"H1.3.140303"
@@ -27,6 +27,10 @@
 #define HC_CONTROLER_
 #define FUN			"hc_control"
 #define HVERSION	"H1.0"
+#elif defined(CAR_TRUCK_1_3_140303)	/*与1.4板一样的原理图*/	/* GPRS/GPS/CAM */
+#define CAR_TRUCK_1_3_140303_
+#define FUN			"car"
+#define HVERSION	"H1.3.140303"
 #else
 #error "Please define project!!"
 #endif

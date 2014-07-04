@@ -36,6 +36,10 @@ void app_cpu_id_proc(char *buf, int *len, int max)
 		sprintf(buf + strlen(buf), "%s", "#");
 		*len = strlen(buf);
 		lticks += SEND_CPU_ID_TIMER * HZ;
+
+		/*∑¢ÀÕ ±º‰¥¡*/
+		sprintf(buf + strlen(buf), "T:T:%llu#", ticks / HZ);
+		*len = strlen(buf);
 	} else {
 		*len = 0;
 	}

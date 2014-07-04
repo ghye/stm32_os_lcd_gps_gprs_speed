@@ -7,16 +7,18 @@
 #include "driv_systick.h"
 #include "app_weighbridge.h"
 #include "driv_weighbridge.h"
+#include "alg_checksum.h"
 
 #ifdef HC_CONTROLER_
 
 #define WB_LEN		44	/* 至少两句整语句的长度 */
-#define WB_TIMER 	2	/* 秒 */
+#define WB_TIMER 	1	/* 秒 */
 
 static int tail;
 static unsigned char wb_buf[WB_LEN];
 
 static int weighbridge_parse_t1(char *buf, int max);
+static int weighbridge_parse_t2(unsigned char *buf, int max);
 
 void app_weighbridge_proc(char *buf, int *len, int max)
 {
@@ -91,5 +93,29 @@ static int weighbridge_parse_t1(char *buf, int max)
 	return kg;
 }
 
+/* 常州艾斯派尔电气科技有限公司，型号: AS232-SP/AS232D-SP */
+static int weighbridge_parse_t2(unsigned char *buf, int max)
+{
+	int i;
+	int kg;
+	char flag;
+
+	kg = -1;
+	flag = 0;
+	for (i = 0; i < max; i++) {
+		if ((*(buf + i) == 0x02) && (max - i >= 18) && (*(buf + i + 16) == 0x0D)) {
+			if (checksum_uchar(buf + i, 17) == *(buf + i + 17)) {
+				flag = 1;
+				break;
+			}
+		}
+	}
+	if (flag == 1) {
+		/* 假定已经配置单位为公斤, 0位小数位, 数字为毛重 */
+		kg = (*(buf + 6) << 24) + (*(buf + 7) << 16) + (*(buf + 8) << 8) + *(buf + 9);
+	}
+
+	return kg;
+}
 
 #endif

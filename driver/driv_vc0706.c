@@ -1,6 +1,6 @@
 #include "public.h"
 
-#if defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 
 #include <string.h>
 
@@ -33,15 +33,18 @@
 
 #define DRIV_VC0706_DATA_MAX	16000
 
-#if defined(CAR_TRUCK_1_5_140325_)
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 #define USARTX	USART3
 #endif
 
 #define VC0706_RXNE_IRQ_ENABLE()	USART_ITConfig(USARTX, USART_IT_RXNE, ENABLE)
 #define VC0706_RXNE_IRQ_DISABLE()	USART_ITConfig(USARTX, USART_IT_RXNE, DISABLE)
 
+#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 #define DRIV_VC0706_IR_GPIO		GPIOC
 #define DRIV_VC0706_IR_GPIO_PIN	GPIO_Pin_4
+#endif
+
 #define DRIV_VC0706_IR_OPEN()	GPIO_ResetBits(DRIV_VC0706_IR_GPIO, DRIV_VC0706_IR_GPIO_PIN)
 #define DRIV_VC0706_IR_CLOSE()	GPIO_SetBits(DRIV_VC0706_IR_GPIO, DRIV_VC0706_IR_GPIO_PIN)
 
@@ -473,7 +476,9 @@ static void driv_vc0706_ir_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
+	#if defined(CAR_TRUCK_1_5_140325_) || defined(CAR_TRUCK_1_3_140303_)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+	#endif
 	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Pin = DRIV_VC0706_IR_GPIO_PIN;
